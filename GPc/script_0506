@@ -1,2 +1,0 @@
-./gplvm -v 3 learn -# 100 examples/oilTrain100.svml oil100.model
-

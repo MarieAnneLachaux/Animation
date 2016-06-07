@@ -1,0 +1,9 @@
+./gplvm -v 3 learn -L true examples/swagger.svml swagger.model
+
+./gplvm -v 3 learn -L true -c rbf -g 0.0001 examples/swagger.svml swagger_back_constrained.model
+
+visualization:
+./gplvm gnuplot oil100.model oil100
+
+gnuplot oil100_plot.gp
+

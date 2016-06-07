@@ -468,6 +468,7 @@ void CClgplvm::learn()
   // if no kernel was specified, add an RBF.
   if(kern.getNumKerns()==0)
   {
+    cout<<"kern number = 0, set RBF kern"<<endl;
     CKern* defaultKern = new CRbfKern(X);
     if(wangWeighting)
       addWangPrior(defaultKern, dynamicsMParameter);
@@ -524,17 +525,23 @@ void CClgplvm::learn()
   else if(!hasBack && hasDyn) {
     pmodel = new CGplvm(&kern, &dynKern, &noise, latentDim, getVerbosity());
   }
-  else if(hasBack)
+  else if(hasBack)//problemmark
   {
+    //cout << "In line 529, hasBack" << endl;
     bK.resize(Y.getRows(), Y.getRows());
     backKern.compute(bK, Y);
     bK.setSymmetric(true);
+    //cout << "In line 533, symmetric set" << endl;
+    //cout << "hasDyn = " <<hasDyn<< endl;
     if (hasDyn) {
+      //cout << "In line 535, hasDyn is TRUE" << endl;
       pmodel = new CGplvm(&kern, &dynKern, &bK, &noise, latentDim, getVerbosity());
     } 
     else {
-      pmodel = new CGplvm(&kern, &bK, &noise, latentDim, getVerbosity());
+      cout << "In line 539, hasDyn is FALSE" << endl;
+      pmodel = new CGplvm(&kern, &bK, &noise, latentDim, getVerbosity());//bugged
     }
+    //cout << "In line 539, pmodel created" << endl;
   }
   else
   {
@@ -553,7 +560,7 @@ void CClgplvm::learn()
   else
     exitError("Unknown initialisation type: " + initialisationType);
 
-  cout << "Optimiser is " << optimiser;
+  cout << "Optimiser is " << optimiser;//default optimiser: scg
   if(optimiser=="scg")
   {
     pmodel->setDefaultOptimiser(CGplvm::SCG);
