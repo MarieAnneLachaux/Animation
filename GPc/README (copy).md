@@ -7,7 +7,7 @@ Gaussian process code in C++ including some implementations of GP-LVM and IVM.
 Gaussian Process Software
 =========================
 
-This page describes how to compile and gives some examples of use of the C++ Gaussian Process code. 
+This page describes how to compile and gives some examples of use of the C++ Gaussian Process code.
 
 ### Release Information
 
@@ -17,16 +17,16 @@ Current release is 0.001.
 
 The software is written in C++ to try and get a degree of flexibility in the models that can be used without a serious performance hit. This was difficult to do in MATLAB as users who have tried version 1 (which was fast but inflexible) and version 2 (which was flexible but slow) of the MATLAB software will appreciate.
 
-The software is mainly written in C++ but relies for some functions on FORTRAN code by other authors and the LAPACK and BLAS libraries. 
+The software is mainly written in C++ but relies for some functions on FORTRAN code by other authors and the LAPACK and BLAS libraries.
 
-As well as the C++ code some utilities are supplied in the corresponding MATLAB code for visualising the results. 
+As well as the C++ code some utilities are supplied in the corresponding MATLAB code for visualising the results.
 
 ## Compiling the Software
 
 The software was written with gcc on ubuntu.
 
 Part of the reason for using gcc is the ease of interoperability with FORTRAN. The code base makes fairly extensive use of FORTRAN so you need to have g77 installed.
-The software is compiled by writing 
+The software is compiled by writing
 
 ```sh
 $ make gp
@@ -36,18 +36,18 @@ at the command line. Architecture specific options are included in the `make.ARC
 
 ### Optimisation
 
-One of the advantages of interfacing to the LAPACK and BLAS libraries is that they are often optimised for particular architectures. 
+One of the advantages of interfacing to the LAPACK and BLAS libraries is that they are often optimised for particular architectures.
 
 
 ## General Information
 
-The way the software operates is through the command line. There is one executable, `gp`. Help can be obtained by writing 
+The way the software operates is through the command line. There is one executable, `gp`. Help can be obtained by writing
 
 ```sh
 $ ./gp -h
 ```
 
-which lists the commands available under the software. Help for each command can then be obtained by writing, for example, 
+which lists the commands available under the software. Help for each command can then be obtained by writing, for example,
 
 ```sh
 $ ./gp learn -h
@@ -62,7 +62,7 @@ The software loads in data in the <a href="http://svmlight.joachims.org/">SVM li
 ## One Dimensional Data Data
 
 
-Provided with the software, in the `examples` directory, is a one dimensional regression problem. The file is called `spgp1d.svml`. 
+Provided with the software, in the `examples` directory, is a one dimensional regression problem. The file is called `spgp1d.svml`.
 
 First we will learn the data using the following command,
 
@@ -76,7 +76,7 @@ The software will load the data in `sinc.svml`. The labels are included in this 
 
 ### Gnuplot
 
-The learned model is saved in a file called `sinc.model`. This file has a plain text format to make it human readable. Once training is complete, the learned covariance function parameters of the model can be displayed using 
+The learned model is saved in a file called `sinc.model`. This file has a plain text format to make it human readable. Once training is complete, the learned covariance function parameters of the model can be displayed using
 
 
 ```sh
@@ -86,17 +86,17 @@ $ ./gp display sinc.model
 ```sh
 Loading model file.
 ... done.
-Standard GP Model: 
+Standard GP Model:
 Optimiser: scg
 Data Set Size: 40
-Kernel Type: 
+Kernel Type:
 Scales learnt: 0
 X learnt: 0
-Bias: 0.106658 
+Bias: 0.106658
 
-Scale: 1 
+Scale: 1
 
-Gaussian Noise: 
+Gaussian Noise:
 Bias on process 0: 0
 Variance: 1e-06
 compound kernel:
@@ -120,7 +120,7 @@ The `sinc` supplied as the last argument acts as a stub for gnuplot to create na
 $ gnuplot sinc_plot.gp
 ```
 
-Note: for this to work on OSX you may have to 
+Note: for this to work on OSX you may have to
 
 ```sh
 $ brew install gnuplot --with-x
@@ -159,16 +159,16 @@ This page describes how to compile and gives some examples of use of the C++ Inf
 
 ### Design Philosophy
 
-The software is written in C++ to try and get a degree of flexibility in the models that can be used without a serious performance hit. 
+The software is written in C++ to try and get a degree of flexibility in the models that can be used without a serious performance hit.
 
-The software is mainly written in C++ but relies for some functions on FORTRAN code by other authors and the LAPACK and BLAS libraries. 
+The software is mainly written in C++ but relies for some functions on FORTRAN code by other authors and the LAPACK and BLAS libraries.
 
 ## Compiling the Software
 
 The software was written with gcc vs 3.2.2. There are definitely Standard Template Library issues on Solaris with gcc 2.95, so I suggest that at least version 3.2 or above is used.
 
 Part of the reason for using gcc is the ease of interoperability with FORTRAN. The code base makes fairly extensive use of FORTRAN so you need to have g77 installed.
-The software is compiled by writing 
+The software is compiled by writing
 
 ```sh
 $ make ivm
@@ -186,17 +186,17 @@ For Windows users the code compiles under cygwin. However you will need version 
 
 ### Microsoft Visual C++
 
-As of Release 0.101 the code compiles under Microsoft Visual Studio 7.1. A project file is provided in the current release in the directory `MSVC/ivm`. The compilation makes use of f2c versions of the FORTRAN code and the C version of LAPACK/BLAS, CLAPACK. Detailed instructions on how to compile are in the readme.msvc file. Much of the work to convert the code (which included ironing out several bugs) was done by William V. Baxter for the GPLVM code. 
+As of Release 0.101 the code compiles under Microsoft Visual Studio 7.1. A project file is provided in the current release in the directory `MSVC/ivm`. The compilation makes use of f2c versions of the FORTRAN code and the C version of LAPACK/BLAS, CLAPACK. Detailed instructions on how to compile are in the readme.msvc file. Much of the work to convert the code (which included ironing out several bugs) was done by William V. Baxter for the GPLVM code.
 
 ## General Information
 
-The way the software operates is through the command line. There is one executable, `ivm`. Help can be obtained by writing 
+The way the software operates is through the command line. There is one executable, `ivm`. Help can be obtained by writing
 
 ```sh
 $ ./ivm -h
 ```
 
-which lists the commands available under the software. Help for each command can then be obtained by writing, for example, 
+which lists the commands available under the software. Help for each command can then be obtained by writing, for example,
 
 ```sh
 $ ./ivm learn -h
@@ -213,7 +213,7 @@ quite useful. However, the gnuplot function seems has a problem. Every time
 I type the command: "Ivm gnuplot traindata name.model", an error comes out
 as: "Unknown noise model!". When I test this function with IVMCPP0p11 IVM,
 its fine, but IVMCPP0p11 has another problem that it gives "out of memory"
-error in test mode! So I use two vesions simultaneously. "</i> 
+error in test mode! So I use two vesions simultaneously. "</i>
 
 I'm working (as of 31/12/2007) on a major rewrite, so it's unlikely that these bugs will be fixed in the near future, however if anyone makes a fix I'll be happy to incorporate it! Please let me know.
 
@@ -234,11 +234,11 @@ The first example is data sampled from a Gaussian process with an RBF kernel fun
 $ ./ivm -v 3 learn -a 200 -k rbf examples/unitsquaregp.svml unitsquaregp.model
 ```
 
-The flag `-v 3` sets the verbosity level to 3 (the highest level) which causes the iterations of the scaled conjugate gradient algorithm to be shown. The flag `-a 200` sets the active set size. The kernel type is selected with the flag `-k rbf`. 
+The flag `-v 3` sets the verbosity level to 3 (the highest level) which causes the iterations of the scaled conjugate gradient algorithm to be shown. The flag `-a 200` sets the active set size. The kernel type is selected with the flag `-k rbf`.
 
 ### Gnuplot
 
-The learned model is saved in a file called `unitsquaregp.model`. This file has a plain text format to make it human readable. Once training is complete, the learned kernel parameters of the model can be displayed using 
+The learned model is saved in a file called `unitsquaregp.model`. This file has a plain text format to make it human readable. Once training is complete, the learned kernel parameters of the model can be displayed using
 
 ```sh
 $ ./ivm display unitsquaregp.model
@@ -288,7 +288,7 @@ Next we consider a simple ARD kernel. The toy data in this case is sampled from 
 $ ./ivm learn -a 100 -k rbf -i 1 examples/ard_gaussian_clusters.svml ard_gaussian_clusters.model
 ```
 
-Displaying the model it is clear that it has selected one of the input dimensions, 
+Displaying the model it is clear that it has selected one of the input dimensions,
 
 ```sh
 Loading model file.<br>
@@ -322,7 +322,7 @@ The IVM learnt with an ARD RBF kernel. One of the input directions has been reco
 
 ## Semi-Supervised Learning
 
-The software also provides an implementation of the null category noise model described in <a href="http://ml.sheffield.ac.uk/~neil/cgi-bin/publications/bibpage.cgi?keyName=Lawrence:semisuper04">Lawrence and Jordan</a>. 
+The software also provides an implementation of the null category noise model described in <a href="http://ml.sheffield.ac.uk/~neil/cgi-bin/publications/bibpage.cgi?keyName=Lawrence:semisuper04">Lawrence and Jordan</a>.
 
 The toy example given in the paper is reconstructed here. To run it type
 
@@ -356,7 +356,7 @@ and can be visualised using
 $ ./ivm gnuplot examples/semisupercrescent.svml semisupercrescent.model semisupercrescent
 ```
 
-followed by 
+followed by
 
 ```sh
 $ gnuplot semisupercrescent_plot.gp
@@ -370,13 +370,13 @@ The result of the visualisation being,
 GP-LVM Software
 ===============
 
-This page describes how to compile and gives some examples of use of the C++ Gaussian Process Latent Variable Model Software (GP-LVM) available for <a href="http://ml.sheffield.ac.uk/~neil/cgi-bin/software/downloadForm.cgi?toolbox=gplvmcpp">download here</a>. 
+This page describes how to compile and gives some examples of use of the C++ Gaussian Process Latent Variable Model Software (GP-LVM) available for <a href="http://ml.sheffield.ac.uk/~neil/cgi-bin/software/downloadForm.cgi?toolbox=gplvmcpp">download here</a>.
 
 ### Release Information
 
 #### Release 0.201
 
-Fixed bug which meant that back constraint wasn't working due to failure to initialise lwork properly for dsysv. 
+Fixed bug which meant that back constraint wasn't working due to failure to initialise lwork properly for dsysv.
 
 Fixed bug in gplvm.cpp which meant dynamics wasn't working properly because initialization of dynamics model learning parameter wasn't set to zero.
 
@@ -741,7 +741,7 @@ $ ./gplvm -v 3 learn -L true -c rbf -g 0.0001 examples/swagger.svml swagger_back
 
 The back constraint here is a kernel mapping with an `RBF' kernel
 which is specified as having an inverse width of 1e-4.
- 
+
 The results can then be seen in MATLAB using
 
 ```matlab
@@ -796,7 +796,7 @@ kernel. The results of the visualisation are shown below.
 the Swagger data with the dynamics. By constraining the GP-LVM with an
 unusual prior the sequence stays continuous in latent space.</center>
 
-This result can also be loaded into MATLAB and played using the command 
+This result can also be loaded into MATLAB and played using the command
 
 ```matlab
 >> mocapResultsCppBvh('swagger_dynamics.model', 'examples/Swagger.bvh', 'bvh');
@@ -828,5 +828,3 @@ Matlab-related lines in your makefile.platform out);
 * when getting segmentation faults in calls to BLAS/LAPACK libraries, it might
 help to compile the mex-file against MKL library instead (use -lmkl\_rt instead
 of -lblas -llapack) and/or preload the libmkl\_rt.so library file.
-
-
