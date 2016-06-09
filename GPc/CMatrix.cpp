@@ -34,7 +34,7 @@ void CMatrix::gemv(const CMatrix& A, const CMatrix& x, double alpha, double beta
   DIMENSIONMATCH(((trans[0]=='n' || trans[0]=='N') && A.ncols==x.nrows && A.nrows == nrows)
 	 ||
 	 ((trans[0]=='t' || trans[0]=='T') && A.nrows==x.nrows && A.ncols == nrows));
-  dgemv_(trans, A.nrows, A.ncols, alpha, A.vals, A.nrows, 
+  dgemv_(trans, A.nrows, A.ncols, alpha, A.vals, A.nrows,
 	 x.vals, 1, beta, vals, 1);
 }
 void CMatrix::gemvRowRow(unsigned int i, const CMatrix& A, const CMatrix& x, unsigned int k, double alpha, double beta, const char* trans)
@@ -45,7 +45,7 @@ void CMatrix::gemvRowRow(unsigned int i, const CMatrix& A, const CMatrix& x, uns
   DIMENSIONMATCH(((trans[0]=='n' || trans[0]=='N') && A.ncols==x.ncols && A.nrows == ncols)
 	 ||
 	 ((trans[0]=='t' || trans[0]=='T') && A.nrows==x.ncols && A.ncols == ncols));
-  dgemv_(trans, A.nrows, A.ncols, alpha, A.vals, A.nrows, 
+  dgemv_(trans, A.nrows, A.ncols, alpha, A.vals, A.nrows,
 	 x.vals+k, x.nrows, beta, vals+i, nrows);
 }
 void CMatrix::gemvRowCol(unsigned int i, const CMatrix& A, const CMatrix& x, unsigned int j, double alpha, double beta, const char* trans)
@@ -56,7 +56,7 @@ void CMatrix::gemvRowCol(unsigned int i, const CMatrix& A, const CMatrix& x, uns
   DIMENSIONMATCH(((trans[0]=='n' || trans[0]=='N') && A.ncols==x.nrows && A.nrows == ncols)
 	 ||
 	 ((trans[0]=='t' || trans[0]=='T') && A.nrows==x.nrows && A.ncols == ncols));
-  dgemv_(trans, A.nrows, A.ncols, alpha, A.vals, A.nrows, 
+  dgemv_(trans, A.nrows, A.ncols, alpha, A.vals, A.nrows,
 	 x.vals+j*x.nrows, 1, beta, vals+i, nrows);
 }
 void CMatrix::gemvColCol(unsigned int j, const CMatrix& A, const CMatrix& x, unsigned int k, double alpha, double beta, const char* trans)
@@ -67,7 +67,7 @@ void CMatrix::gemvColCol(unsigned int j, const CMatrix& A, const CMatrix& x, uns
   DIMENSIONMATCH(((trans[0]=='n' || trans[0]=='N') && A.ncols==x.nrows && A.nrows == nrows)
 	 ||
 	 ((trans[0]=='t' || trans[0]=='T') && A.nrows==x.nrows && A.ncols == nrows));
-  dgemv_(trans, A.nrows, A.ncols, alpha, A.vals, A.nrows, 
+  dgemv_(trans, A.nrows, A.ncols, alpha, A.vals, A.nrows,
 	 x.vals+k*x.nrows, 1, beta, vals+j*nrows, 1);
 }
 void CMatrix::gemvColRow(unsigned int j, const CMatrix& A, const CMatrix& x, unsigned  int i, double alpha, double beta, const char* trans)
@@ -78,9 +78,9 @@ void CMatrix::gemvColRow(unsigned int j, const CMatrix& A, const CMatrix& x, uns
   DIMENSIONMATCH(((trans[0]=='n' || trans[0]=='N') && A.ncols==x.ncols && A.nrows == nrows)
 	 ||
 	 ((trans[0]=='t' || trans[0]=='T') && A.nrows==x.ncols && A.ncols == nrows));
-  dgemv_(trans, A.nrows, A.ncols, alpha, A.vals, A.nrows, 
+  dgemv_(trans, A.nrows, A.ncols, alpha, A.vals, A.nrows,
 	 x.vals+i, x.nrows, beta, vals+j*nrows, 1);
-}  
+}
 // "l" is A*B and "r" is B*A;
 void CMatrix::symm(const CMatrix& A, const CMatrix& B, double alpha, double beta, const char* type, const char* side)
 {
@@ -108,19 +108,27 @@ void CMatrix::symm(const CMatrix& A, const CMatrix& B, double alpha, double beta
 }
 int CMatrix::sysv(const CMatrix& A, const char* uplo, int lwork)
 {
+  cout << "In line 111 of CMATRIX. Entered sysv" << endl;
   MATRIXPROPERTIES(A.isSymmetric());
+    cout << "In line 113 of CMATRIX. before chararguments" << endl;
   CHARARGUMENTS(uplo[0]=='L' || uplo[0]=='l' || uplo[0]=='U' || uplo[0]=='u');
   DIMENSIONMATCH(nrows==A.nrows);
-  if(lwork < 0)
+    cout << "In line 115 of CMATRIX. before lwork branching, lwork = "<<lwork << endl;
+  if(lwork <= 0)
     lwork = 3*nrows;
   int info;
+    cout << "In line 120 of CMATRIX. before creating ipivv"<< endl;
   std::vector<int> ipivv(nrows);
   int *ipiv = &ipivv[0];
+    cout << "In line 120 of CMATRIX. before creating work"<<lwork<< endl;
   CMatrix work(1, lwork);
 
+  cout << "In line 122 of CMATRIX. before dsysv_" << info<< endl;
   dsysv_(uplo, nrows, ncols, A.vals, A.nrows, ipiv, vals, nrows, work.vals, lwork, info);
+    cout << "In line 123 of CMATRIX. info = " << info<< endl;
   if(info>0) throw ndlexceptions::MatrixSingular();
   if(info<0) throw ndlexceptions::Error("Incorrect argument in SYSV.");
+    cout << "In line 111 of CMATRIX. before return" << endl;
   return (int)work.getVal(0); // optimal value for lwork
 }
 
@@ -134,8 +142,8 @@ void CMatrix::symv(const CMatrix& A, const CMatrix& x, double alpha, double beta
   DIMENSIONMATCH(nrows==A.nrows);
   DIMENSIONMATCH(nrows==x.nrows);
 
-  
-  dsymv_(upperLower, A.ncols, alpha, A.vals, A.nrows, 
+
+  dsymv_(upperLower, A.ncols, alpha, A.vals, A.nrows,
 	 x.vals, 1, beta, vals, 1);
 }
 void CMatrix::symvRowRow(unsigned int i, const CMatrix& A, const CMatrix& x, unsigned int k, double alpha, double beta, const char* upperLower)
@@ -147,7 +155,7 @@ void CMatrix::symvRowRow(unsigned int i, const CMatrix& A, const CMatrix& x, uns
   CHARARGUMENTS(upperLower[0]=='u' || upperLower[0]=='U' || upperLower[0]=='l' || upperLower[0]=='L');
   DIMENSIONMATCH(ncols==A.nrows);
   DIMENSIONMATCH(ncols==x.ncols);
-  dsymv_(upperLower, A.ncols, alpha, A.vals, A.nrows, 
+  dsymv_(upperLower, A.ncols, alpha, A.vals, A.nrows,
 	 x.vals+k, x.nrows, beta, vals+i, nrows);
 }
 void CMatrix::symvRowCol(unsigned int i, const CMatrix& A, const CMatrix& x, unsigned int j, double alpha, double beta, const char* upperLower)
@@ -159,7 +167,7 @@ void CMatrix::symvRowCol(unsigned int i, const CMatrix& A, const CMatrix& x, uns
   CHARARGUMENTS(upperLower[0]=='u' || upperLower[0]=='U' || upperLower[0]=='l' || upperLower[0]=='L');
   DIMENSIONMATCH(ncols==A.nrows);
   DIMENSIONMATCH(ncols==x.nrows);
-  dsymv_(upperLower, A.ncols, alpha, A.vals, A.nrows, 
+  dsymv_(upperLower, A.ncols, alpha, A.vals, A.nrows,
 	 x.vals+j*x.nrows, 1, beta, vals+i, nrows);
 }
 void CMatrix::symvColCol(unsigned int j, const CMatrix& A, const CMatrix& x, unsigned int k, double alpha, double beta, const char* upperLower)
@@ -172,7 +180,7 @@ void CMatrix::symvColCol(unsigned int j, const CMatrix& A, const CMatrix& x, uns
   DIMENSIONMATCH(nrows==A.nrows);
   DIMENSIONMATCH(A.ncols==A.nrows);
   DIMENSIONMATCH(nrows==x.nrows);
-  dsymv_(upperLower, A.ncols, alpha, A.vals, A.nrows, 
+  dsymv_(upperLower, A.ncols, alpha, A.vals, A.nrows,
 	 x.vals+k*x.nrows, 1, beta, vals+j*nrows, 1);
 }
 void CMatrix::symvColColOff(unsigned int j, int yr1, const CMatrix& A, const CMatrix& x, unsigned int k, int xr1, double alpha, double beta, const char* upperLower)
@@ -186,7 +194,7 @@ void CMatrix::symvColColOff(unsigned int j, int yr1, const CMatrix& A, const CMa
   BOUNDCHECK(yr1+A.nrows<=nrows);
   BOUNDCHECK(xr1+A.nrows<=x.nrows);
   CHARARGUMENTS(upperLower[0]=='u' || upperLower[0]=='U' || upperLower[0]=='l' || upperLower[0]=='L');
-  dsymv_(upperLower, A.ncols, alpha, A.vals, A.nrows, 
+  dsymv_(upperLower, A.ncols, alpha, A.vals, A.nrows,
     x.vals+k*x.nrows+xr1, 1, beta, vals+j*nrows+yr1, 1);
 }
 void CMatrix::symvColRow(unsigned int j, const CMatrix& A, const CMatrix& x, unsigned int i, double alpha, double beta, const char* upperLower)
@@ -198,10 +206,10 @@ void CMatrix::symvColRow(unsigned int j, const CMatrix& A, const CMatrix& x, uns
   CHARARGUMENTS(upperLower[0]=='u' || upperLower[0]=='U' || upperLower[0]=='l' || upperLower[0]=='L');
   DIMENSIONMATCH(nrows==A.nrows);
   DIMENSIONMATCH(nrows==x.ncols);
-  dsymv_(upperLower, A.ncols, alpha, A.vals, A.nrows, 
+  dsymv_(upperLower, A.ncols, alpha, A.vals, A.nrows,
 	 x.vals+i, x.nrows, beta, vals+j*nrows, 1);
-}  
-  
+}
+
 void CMatrix::gemm(const CMatrix& A, const CMatrix& B, double alpha, double beta, const char* transa, const char* transb)
 {
   // Level 3 Blas operation C <- alpha op(A)*op(B) + beta*C
@@ -238,12 +246,12 @@ void CMatrix::gemm(const CMatrix& A, const CMatrix& B, double alpha, double beta
       break;
     default:
       CHARARGUMENTS(0);
-    }	
+    }
   DIMENSIONMATCH(n==ncols);
   DIMENSIONMATCH(m==nrows);
-  dgemm_(transa, transb, m, n, k, alpha, A.vals, A.nrows, 
+  dgemm_(transa, transb, m, n, k, alpha, A.vals, A.nrows,
 	 B.vals, B.nrows, beta, vals, nrows);
-  
+
 }
 void CMatrix::trmm(const CMatrix& A, double alpha, const char* side, const char* type, const char* trans, const char* diag)
 {
@@ -251,7 +259,7 @@ void CMatrix::trmm(const CMatrix& A, double alpha, const char* side, const char*
   CHARARGUMENTS(type[0]=='L' || type[0]=='l' || type[0]=='U' || type[0]=='u');
   CHARARGUMENTS(trans[0]=='N' || trans[0]=='n' || trans[0]=='T' || trans[0]=='t');
   CHARARGUMENTS(diag[0]=='N' || diag[0]=='n' || diag[0]=='U' || diag[0]=='u');
-  
+
   MATRIXPROPERTIES(A.isTriangular());
   switch(side[0])
     {
@@ -266,7 +274,7 @@ void CMatrix::trmm(const CMatrix& A, double alpha, const char* side, const char*
     default:
       throw ndlexceptions::MatrixError("No such value for side.");
     }
-  
+
   dtrmm_(side, type, trans, diag, nrows, ncols, alpha, A.vals, A.nrows, vals, nrows);
 }
 void CMatrix::trsm(const CMatrix& A, double alpha, const char* side, const char* type, const char* trans, const char* diag)
@@ -275,7 +283,7 @@ void CMatrix::trsm(const CMatrix& A, double alpha, const char* side, const char*
   CHARARGUMENTS(type[0]=='L' || type[0]=='l' || type[0]=='U' || type[0]=='u');
   CHARARGUMENTS(trans[0]=='N' || trans[0]=='n' || trans[0]=='T' || trans[0]=='t');
   CHARARGUMENTS(diag[0]=='N' || diag[0]=='n' || diag[0]=='U' || diag[0]=='u');
-  
+
   MATRIXPROPERTIES(A.isTriangular());
   switch(side[0])
     {
@@ -290,14 +298,14 @@ void CMatrix::trsm(const CMatrix& A, double alpha, const char* side, const char*
     default:
       throw ndlexceptions::MatrixError("No such value for side.");
     }
-  
+
   dtrsm_(side, type, trans, diag, nrows, ncols, alpha, A.vals, A.nrows, vals, nrows);
 }
 
 void CMatrix::syrk(const CMatrix& A, double alpha, double beta, const char* type, const char* trans)
 {
   //  C:=alpha*op(A)*op(A)' + beta*C.
-  MATRIXPROPERTIES(isSymmetric() || beta==0.0);  
+  MATRIXPROPERTIES(isSymmetric() || beta==0.0);
   unsigned int n = 0;
   unsigned int k = 0;
   switch(trans[0])
@@ -332,7 +340,7 @@ void CMatrix::sumRow(const CMatrix& A, double alpha, double beta)
     }
     setVal(beta*getVal(i)+alpha*s, i);
   }
-} 
+}
 void CMatrix::sumCol(const CMatrix& A, double alpha, double beta)
 {
   DIMENSIONMATCH(colsMatch(A) && nrows==1 || nrows==A.ncols && ncols==1);
@@ -349,7 +357,7 @@ void CMatrix::sumCol(const CMatrix& A, double alpha, double beta)
 
 void CMatrix::copySymmetric(const char* type)
 {
-  switch(type[0]) 
+  switch(type[0])
     {
     case 'U':
     case 'u':
@@ -394,7 +402,7 @@ void CMatrix::chol(const char* type)
 	  vals[i + nrows*j] = 0.0;
     break;
   }
-  setTriangular(true);    
+  setTriangular(true);
 }
 void CMatrix::chol()
 {
@@ -484,19 +492,19 @@ void CMatrix::inv()
 {
   MATRIXPROPERTIES(isSquare());
   // create output matrix by lu decomposition of input
-    
+
   int length = nrows;
   std::vector<int> ipiv(length);
   int info = 0;
-    
-  dgetrf_(nrows, ncols, 
+
+  dgetrf_(nrows, ncols,
 	  vals, ncols, &ipiv[0], info);
   if(info!=0) throw ndlexceptions::MatrixConditionError();
   int order = nrows;
   int lwork = order*16;
   std::vector<double> work(lwork);
   info = 0;
-  dgetri_(order, vals, ncols, 
+  dgetri_(order, vals, ncols,
 	  &ipiv[0], &work[0], lwork, info);
   // check for successful inverse
   if(info!=0) throw ndlexceptions::MatrixConditionError();
@@ -530,7 +538,7 @@ double CMatrix::sum() const
   double sum = 0.0;
   for(unsigned int i=0; i<nrows*ncols; i++)
     sum += vals[i];
-  return sum; 
+  return sum;
 }
 double CMatrix::trace() const
 {
@@ -563,7 +571,7 @@ double CMatrix::maxAbsDiff(const CMatrix& X) const
 	max = diff;
     }
   return max;
-} 
+}
 
 double CMatrix::max() const
 {
@@ -590,7 +598,7 @@ void CMatrix::ones()
       vals[i]=1.0;
     }
 }
-void CMatrix::diag(const CMatrix& d) 
+void CMatrix::diag(const CMatrix& d)
 {
   MATRIXPROPERTIES(isSquare());
   for(unsigned int i=0; i<nrows; i++)
@@ -604,7 +612,7 @@ void CMatrix::diag(const CMatrix& d)
     }
   setSymmetric(true);
 }
-void CMatrix::diag(double d) 
+void CMatrix::diag(double d)
 {
   MATRIXPROPERTIES(isSquare());
   for(unsigned int i=0; i<nrows; i++)
@@ -618,7 +626,7 @@ void CMatrix::diag(double d)
     }
   setSymmetric(true);
 }
-void CMatrix::eye() 
+void CMatrix::eye()
 {
   MATRIXPROPERTIES(isSquare());
   for(unsigned int i=0; i<nrows; i++)
@@ -632,7 +640,7 @@ void CMatrix::eye()
     }
   setSymmetric(true);
 }
-      
+
 
 void CMatrix::zeros()
 {
@@ -698,7 +706,7 @@ void CMatrix::memReAllocate(int rowIncrease, int colIncrease)
   unsigned int minRows = newRows;
   unsigned int minCols = newCols;
   double* newVals;
-  
+
   if(nrows<minRows) minRows = nrows;
   if(ncols<minCols) minCols = ncols;
   SANITYCHECK(newRows>0);
@@ -746,14 +754,14 @@ void CMatrix::maxRow(CMatrix& m) const
 	    m.setVal(val, 0, j);
 	}
     }
-} 
+}
 void CMatrix::minRow(CMatrix& m) const
 {
   DIMENSIONMATCH(m.getRows()==1);
   DIMENSIONMATCH(m.getCols()==getCols());
   for(unsigned int j=0; j<getCols(); j++)
     {
-      m.setVal(getVal(0, j), j); 
+      m.setVal(getVal(0, j), j);
       for(unsigned int i=1; i<getRows(); i++)
 	{
 	  double val=getVal(i, j);
@@ -761,17 +769,17 @@ void CMatrix::minRow(CMatrix& m) const
 	    m.setVal(val, 0, j);
 	}
     }
-} 
+}
 
 
-double CMatrix::jitChol(CMatrix& A, unsigned int maxTries) 
+double CMatrix::jitChol(CMatrix& A, unsigned int maxTries)
 {
   // this is an upper cholesky
 
   // set the jitter to be 1e-6 times the mean of diagonal.
   MATRIXPROPERTIES(A.isSquare());
   MATRIXPROPERTIES(A.isSymmetric());
-  
+
   double jitter = 1e-6*A.trace()/(double)A.getRows();
   bool success = false;
   unsigned int tries = 0;
@@ -820,29 +828,29 @@ ostream& operator<<(ostream& out, const CMatrix& A)
   return out;
 }
 
-CMatrix lu(const CMatrix& inMatrix) 
+CMatrix lu(const CMatrix& inMatrix)
 {
-  
+
   CMatrix outMatrix(inMatrix);
   outMatrix.lu();
   return outMatrix;
 }
 
-CMatrix chol(const CMatrix& inMatrix) 
+CMatrix chol(const CMatrix& inMatrix)
 {
-  
+
   CMatrix outMatrix(inMatrix);
   chol(outMatrix, inMatrix);
   return outMatrix;
 }
-void chol(CMatrix& outMatrix, const CMatrix& inMatrix) 
+void chol(CMatrix& outMatrix, const CMatrix& inMatrix)
 {
-  
+
   DIMENSIONMATCH(outMatrix.dimensionsMatch(inMatrix));
   outMatrix.copy(inMatrix);
   outMatrix.chol("U");
 }
-CMatrix jitChol(const CMatrix& inMatrix, unsigned int maxTries = 10) 
+CMatrix jitChol(const CMatrix& inMatrix, unsigned int maxTries = 10)
 {
   CMatrix outMatrix(inMatrix);
   jitChol(outMatrix, inMatrix, maxTries);
@@ -850,7 +858,7 @@ CMatrix jitChol(const CMatrix& inMatrix, unsigned int maxTries = 10)
 
 }
 
-double jitChol(CMatrix& outMatrix, const CMatrix& inMatrix, unsigned int maxTries = 10) 
+double jitChol(CMatrix& outMatrix, const CMatrix& inMatrix, unsigned int maxTries = 10)
 {
 
   DIMENSIONMATCH(outMatrix.dimensionsMatch(inMatrix));
@@ -972,7 +980,7 @@ CMatrix sumRow(const CMatrix& A)
     S.setVal(s, i);
   }
   return S;
-} 
+}
 CMatrix meanRow(const CMatrix& A)
 {
   CMatrix M = sumRow(A);
@@ -986,7 +994,7 @@ CMatrix varRow(const CMatrix& A)
   CMatrix M = meanRow(A);
   double numColsInv = 1.0/(double)A.getCols();
   for(unsigned int i=0; i<A.getRows(); i++)
-    M.setVal(A.norm2Row(i)*numColsInv - M.getVal(i, 0)*M.getVal(i, 0), i, 0);   
+    M.setVal(A.norm2Row(i)*numColsInv - M.getVal(i, 0)*M.getVal(i, 0), i, 0);
   return M;
 }
 CMatrix stdRow(const CMatrix& A)
@@ -1009,7 +1017,7 @@ CMatrix sumCol(const CMatrix& A)
     S.setVal(s, j);
   }
   return S;
-} 
+}
 CMatrix meanCol(const CMatrix& A)
 {
   CMatrix M = sumCol(A);
@@ -1023,7 +1031,7 @@ CMatrix varCol(const CMatrix& A)
   CMatrix M = meanCol(A);
   double numRowsInv = 1.0/(double)A.getRows();
   for(unsigned int j=0; j<A.getCols(); j++)
-    M.setVal(A.norm2Col(j)*numRowsInv - M.getVal(0, j)*M.getVal(0, j), 0, j);   
+    M.setVal(A.norm2Col(j)*numRowsInv - M.getVal(0, j)*M.getVal(0, j), 0, j);
   return M;
 }
 CMatrix stdCol(const CMatrix& A)
@@ -1051,13 +1059,13 @@ double randn() {
 // void swap(CMatrix& x, CMatrix& y) {
 //   // Level 1 Blas operation y <-> x
 //   DIMENSIONMATCH(y.ncols==x.ncols);
-//   DIMENSIONMATCH(y.nrows==x.nrows);   
+//   DIMENSIONMATCH(y.nrows==x.nrows);
 //   dswap_(x.ncols*x.nrows, x.vals, 1, y.vals, 1);
 // }
-void CMatrix::readParamsFromStream(istream& in) 
+void CMatrix::readParamsFromStream(istream& in)
 {
   string line;
-  
+
   if(getBaseTypeStream(in)!="matrix")
     throw ndlexceptions::StreamFormatError("matrix", "Unexpected base type");
   if(getTypeStream(in)!="doubleMatrix")
@@ -1076,7 +1084,7 @@ void CMatrix::readParamsFromStream(istream& in)
     ndlstrutil::tokenise(tokens, line);
     if(getCols()!=tokens.size())
       throw ndlexceptions::StreamFormatError("matrix", "Incorrect number of columns in row " + ndlstrutil::itoa(i) + " of matrix.");
-    for(unsigned int j=0; j<tokens.size(); j++) 
+    for(unsigned int j=0; j<tokens.size(); j++)
     {
       int ind = tokens[j].find('.');
       if(ind==std::string::npos||ind<0)
@@ -1098,23 +1106,23 @@ void CMatrix::writeParamsToStream(ostream& out) const
 void CMatrix::fromUnheadedFile(const string fileName) {
   ifstream in(fileName.c_str());
   if(!in) throw ndlexceptions::FileReadError(fileName);
-  try 
+  try
   {
       fromUnheadedStream(in);
   }
-  catch(ndlexceptions::StreamFormatError err) 
+  catch(ndlexceptions::StreamFormatError err)
   {
     throw ndlexceptions::FileFormatError(fileName, err);
   }
   in.close();
 }
-void CMatrix::fromUnheadedStream(istream& in) 
+void CMatrix::fromUnheadedStream(istream& in)
 {
   string line;
   vector<string> tokens;
   unsigned int rowNo = 0;
   unsigned int allocateRows = ndlstrutil::ALLOCATECHUNK/getCols();
-  while(getline(in, line)) 
+  while(getline(in, line))
   {
     if(line[line.size()-1]=='\r')
       line.erase(line.size()-1);
@@ -1122,19 +1130,19 @@ void CMatrix::fromUnheadedStream(istream& in)
       continue;
     tokens.clear();
     ndlstrutil::tokenise(tokens, line);
-    
-    if(rowNo==0) 
+
+    if(rowNo==0)
     {
       int cols = tokens.size();
       if(getRows()==0)
-	resize(allocateRows, cols);	  
+	resize(allocateRows, cols);
     }
-    
+
     if(rowNo>=getRows())
       resize(getRows()+allocateRows, getCols());
     if(tokens.size()!=getCols())
       throw ndlexceptions::StreamFormatError("numCols");
-    for(unsigned int j=0; j<tokens.size(); j++) 
+    for(unsigned int j=0; j<tokens.size(); j++)
     {
       int ind = tokens[j].find('.');
       if(ind==std::string::npos||ind<0)
@@ -1155,11 +1163,11 @@ void CMatrix::toUnheadedFile(const string fileName, const string comment) const 
   toUnheadedStream(out);
   out.close();
 }
-void CMatrix::toUnheadedStream(ostream& out) const 
+void CMatrix::toUnheadedStream(ostream& out) const
 {
-  for(unsigned int i = 0; i < getRows(); i++) 
+  for(unsigned int i = 0; i < getRows(); i++)
   {
-    for(unsigned int j = 0; j < getCols(); j++) 
+    for(unsigned int j = 0; j < getCols(); j++)
     {
       double val = getVal(i, j);
       if((val - (int)val)==0.0)
@@ -1171,7 +1179,7 @@ void CMatrix::toUnheadedStream(ostream& out) const
   }
 }
 #ifdef _NDLMATLAB
-mxArray* CMatrix::toMxArray() const 
+mxArray* CMatrix::toMxArray() const
 {
   size_t dims[2];
   dims[0] = nrows;
@@ -1181,26 +1189,26 @@ mxArray* CMatrix::toMxArray() const
   dcopy_(ncols*nrows, vals, 1, matlabVals, 1);
   return matlabArray;
 }
-void CMatrix::fromMxArray(const mxArray* matlabArray) 
+void CMatrix::fromMxArray(const mxArray* matlabArray)
 {
   // TODO implement true sparse matrices to handle this.
-  if(mxIsSparse(matlabArray)) 
+  if(mxIsSparse(matlabArray))
   {
     fromSparseMxArray(matlabArray);
   }
-  else 
+  else
   {
     fromFullMxArray(matlabArray);
   }
 }
-void CMatrix::fromFullMxArray(const mxArray* matlabArray) 
+void CMatrix::fromFullMxArray(const mxArray* matlabArray)
 {
   SANITYCHECK(!mxIsSparse(matlabArray));
-  if(mxGetClassID(matlabArray) != mxDOUBLE_CLASS) 
+  if(mxGetClassID(matlabArray) != mxDOUBLE_CLASS)
   {
     throw ndlexceptions::Error("mxArray is not a double matrix.");
   }
-  if(mxGetNumberOfDimensions(matlabArray) != 2) 
+  if(mxGetNumberOfDimensions(matlabArray) != 2)
   {
     throw ndlexceptions::Error("mxArray does not have 2 dimensions.");
   }
@@ -1209,14 +1217,14 @@ void CMatrix::fromFullMxArray(const mxArray* matlabArray)
   double* matlabVals = mxGetPr(matlabArray);
   dcopy_(ncols*nrows, matlabVals, 1, vals, 1);
 }
-void CMatrix::fromSparseMxArray(const mxArray* matlabArray) 
+void CMatrix::fromSparseMxArray(const mxArray* matlabArray)
 {
   SANITYCHECK(mxIsSparse(matlabArray));
-  if(mxGetClassID(matlabArray) != mxDOUBLE_CLASS) 
+  if(mxGetClassID(matlabArray) != mxDOUBLE_CLASS)
   {
     throw ndlexceptions::Error("mxArray is not a double matrix.");
   }
-  if(mxGetNumberOfDimensions(matlabArray) != 2) 
+  if(mxGetNumberOfDimensions(matlabArray) != 2)
   {
     throw ndlexceptions::Error("mxArray does not have 2 dimensions.");
   }
@@ -1227,15 +1235,15 @@ void CMatrix::fromSparseMxArray(const mxArray* matlabArray)
   size_t* matlabIr = mxGetIr(matlabArray);
   size_t* matlabJc = mxGetJc(matlabArray);
   int nnz = matlabJc[getCols()];
-  for(int j=0; j<getCols(); j++) 
+  for(int j=0; j<getCols(); j++)
   {
-    for(int i=matlabJc[j]; i<matlabJc[j+1]; i++) 
+    for(int i=matlabJc[j]; i<matlabJc[j+1]; i++)
     {
       setVal(matlabVals[i], matlabIr[i], j);
-    } 
+    }
   }
-} 
-#endif   
+}
+#endif
 
 #ifdef _HDF5
     void CMatrix::writeToHdf5( const std::string& filename, const std::string& path_to_dataset ) const
@@ -1245,7 +1253,7 @@ void CMatrix::fromSparseMxArray(const mxArray* matlabArray)
         {
             hid_t group_id = get_parent_h5_obj( file_id, path_to_dataset );
             std::vector<std::string> path_comp = split_path( path_to_dataset );
-            
+
             std::vector<size_t> shape(2);
             shape[0] = nrows; shape[1] = ncols;
 
@@ -1254,7 +1262,7 @@ void CMatrix::fromSparseMxArray(const mxArray* matlabArray)
         catch( ... )
         {
             close_hdf5_file( file_id );
-        }        
+        }
     }
 
     void CMatrix::readFromHdf5( const std::string& filename, const std::string& path_to_dataset, bool transpose_ )
@@ -1264,11 +1272,11 @@ void CMatrix::fromSparseMxArray(const mxArray* matlabArray)
         {
             hid_t group_id = get_parent_h5_obj( file_id, path_to_dataset );
             std::vector<std::string> path_comp = split_path( path_to_dataset );
-            
+
             std::vector<size_t> shape = get_dataset_shape( group_id, path_comp.back().c_str() );
             resize( shape[1], shape[0] );
             array_from_hdf5( group_id, path_comp.back().c_str(), vals );
-            
+
             //required when reading dataset stored from a row-major matrix
             if( transpose_ )
                 trans();
@@ -1276,7 +1284,6 @@ void CMatrix::fromSparseMxArray(const mxArray* matlabArray)
         catch( ... )
         {
             close_hdf5_file( file_id );
-        }       
+        }
     }
 #endif
-

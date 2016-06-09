@@ -2,7 +2,7 @@
 
 CGplvm::CGplvm()
   : CDataModel(), CProbabilisticOptimisable()
-{ 
+{
   pkern=NULL;
   pnoise=NULL;
   _init();
@@ -14,7 +14,7 @@ void CGplvm::_init()
   setName("Gaussian process latent variable model");
 }
 
-CGplvm::CGplvm(CKern* kernel, CScaleNoise* nois, 
+CGplvm::CGplvm(CKern* kernel, CScaleNoise* nois,
                const int latDim, const int verbos)
   :
   CDataModel(), CProbabilisticOptimisable(),
@@ -35,7 +35,7 @@ CGplvm::CGplvm(CKern* kernel, CScaleNoise* nois,
   initVals();
 }
 
-CGplvm::CGplvm(CKern* kernel, CKern* dynKernel, CScaleNoise* nois, 
+CGplvm::CGplvm(CKern* kernel, CKern* dynKernel, CScaleNoise* nois,
                const int latDim, const int verbos)
   :
   CDataModel(), CProbabilisticOptimisable(), pkern(kernel), dynKern(dynKernel), bK(0),
@@ -57,28 +57,41 @@ CGplvm::CGplvm(CKern* kernel, CKern* dynKernel, CScaleNoise* nois,
   initVals();
 }
 
-CGplvm::CGplvm(CKern* kernel, CMatrix* backKernel, CScaleNoise* nois, 
+CGplvm::CGplvm(CKern* kernel, CMatrix* backKernel, CScaleNoise* nois,
                const int latDim, const int verbos)
   :
   CDataModel(), CProbabilisticOptimisable(), pkern(kernel), dynKern(0), bK(backKernel),
   pnoise(nois), latentDim(latDim), KupToDate(false)
 {
+  cout << "In line 66 of CGPLVM" << endl;
   _init();
+    cout << "In line 68 of CGPLVM" << endl;
   setApproximationType("ftc");
+    cout << "In line 70 of CGPLVM" << endl;
   setInputScaleLearnt(false);
+    cout << "In line 72 of CGPLVM" << endl;
   setLatentRegularised(true);
+    cout << "In line 74 of CGPLVM" << endl;
   setDynamicModelLearnt(false);
+    cout << "In line 76 of CGPLVM" << endl;
   setBackConstrained(true);
+    cout << "In line 78 of CGPLVM" << endl;
   setVerbosity(verbos);
+    cout << "In line 80 of CGPLVM" << endl;
   dataDim=pnoise->getOutputDim();
+    cout << "In line 82 of CGPLVM" << endl;
   numData=pnoise->getNumData();
+    cout << "In line 84 of CGPLVM" << endl;
   pX = new CMatrix();
+    cout << "In line 86 of CGPLVM" << endl;
   initStoreage();
+    cout << "In line 88 of CGPLVM" << endl;
   initVals();
+    cout << "In line 90 of CGPLVM" << endl;
 }
 
 CGplvm::CGplvm(CKern* kernel, CKern* dynKernel, CMatrix* backKernel,
-               CScaleNoise* nois, 
+               CScaleNoise* nois,
                const int latDim, const int verbos)
   :
   CDataModel(), CProbabilisticOptimisable(), pkern(kernel), dynKern(dynKernel), bK(backKernel),
@@ -119,7 +132,7 @@ void CGplvm::initStoreage()
   {
     X_u.resize(numActive, latentDim);
   }
-  if (dynamicsLearnt) 
+  if (dynamicsLearnt)
   {
     Xout.resize(numData, latentDim);
     dynBreakList.push_back(0);
@@ -136,9 +149,14 @@ void CGplvm::initStoreage()
 
 void CGplvm::initVals()
 {
+  cout << "In line 152 of CGPLVM" << endl;
   for(int i=0; i<numData; i++)
     pnoise->updateSites(m, beta, i, nu, g, i);
+
+  cout << "In line 156 of CGPLVM" << endl;
   initX();
+  cout << "In line 158 of CGPLVM" << endl;
+
 }
 
 void CGplvm::initXrand()
@@ -150,13 +168,15 @@ void CGplvm::initXrand()
 
 void CGplvm::initX()
 {
+  cout << "In line 171 of CGPLVM" << endl;
   initXpca();
+  cout << "In line 173 of CGPLVM" << endl;
   updateX();
 }
 
 void CGplvm::initXpca()  // pca style initialisation.
 {
-  if (!isBackConstrained()) 
+  if (!isBackConstrained())
   {
     // Regular PCA initialization
 
@@ -164,7 +184,7 @@ void CGplvm::initXpca()  // pca style initialisation.
     CMatrix ymean = meanCol(m);
     CMatrix covm(m.getCols(), m.getCols());
     covm.setSymmetric(true);
-    covm.syrk(m, 1.0/(double)m.getRows(), 0.0, "u", "t");  
+    covm.syrk(m, 1.0/(double)m.getRows(), 0.0, "u", "t");
     ymean.trans();
     covm.syr(ymean, -1.0, "u");
 
@@ -188,6 +208,7 @@ void CGplvm::initXpca()  // pca style initialisation.
   }
   else
   {
+    cout << "In line 181 of CGPLVM, isBackConstrained == true" << endl;
     // PCA initialization with Back-kernel bK initialized before
     // constructor as kernel of the type bK_ij(Y_i,Y_j) after that it
     // isn't modified.  With an RBF back-kernel bK contains the
@@ -205,19 +226,26 @@ void CGplvm::initXpca()  // pca style initialisation.
     CMatrix eigVals(1, m.getRows());
     eigVectors.syev(eigVals, "v", "u");
 
+    cout << "In line 229 of CGPLVM, before initialization of x" << endl;
     // X initialized to first few eigenvectors of bK
     for(int i=0; i<getLatentDim(); i++)
     {
       pX->copyColCol(i, eigVectors, m.getRows()-1-i);
     }
 
+    cout << "In line 236 of CGPLVM, before initialization of solution bK * A = X" << endl;
     // A initialized to solution of bK * A = X
     eigVectors.deepCopy(*bK);
+        cout << "In line 239 of CGPLVM, before initialization of solution bK * A = X" << endl;
     eigVectors.setSymmetric(true);
+        cout << "In line 241 of CGPLVM, before initialization of solution bK * A = X" << endl;
     A.deepCopy(*pX);
+        cout << "In line 243 of CGPLVM, before sysv" << endl;
     A.sysv(eigVectors, "u"); // solve bK * A = X
 
   }
+  cout << "In line 242 of CGPLVM, initialization fixed. before update" << endl;
+
   updateX();
 }
 
@@ -294,14 +322,14 @@ void CGplvm::setOptParams(const CMatrix& param)
   setKupToDate(false);
   unsigned int counter=0;
   for(unsigned int i=0; i<pkern->getNumParams(); i++)
-  {	  
+  {
     pkern->setTransParam(param.getVal(counter), i);
     counter++;
   }
   if (dynamicsLearnt && dynamicKernelLearnt)
   {
     for(unsigned int i=0; i<dynKern->getNumParams(); i++)
-    {	  
+    {
       dynKern->setTransParam(param.getVal(counter), i);
       counter++;
     }
@@ -322,7 +350,7 @@ void CGplvm::setOptParams(const CMatrix& param)
     {
       pnoise->setScale(param.getVal(counter), j);
       counter++;
-    }      
+    }
     for(unsigned int i=0; i<numData; i++) {
       pnoise->updateSites(m, beta, i, nu, g, i);
     }
@@ -353,7 +381,7 @@ void CGplvm::posteriorMeanVar(CMatrix& mu, CMatrix& varSigma, const CMatrix& Xin
     double vsVal = pkern->diagComputeElement(Xin, i) - kX.norm2Col(i);
     BOUNDCHECK(vsVal>=0);
     for(int j=0; j<dataDim; j++)
-      varSigma.setVal(vsVal, i, j);	    
+      varSigma.setVal(vsVal, i, j);
   }
   // solve LcholK' * tmp = kX, kX := tmp
   kX.trsm(LcholK, 1.0, "L", "L", "T", "N"); // now it is invK * K
@@ -366,8 +394,8 @@ void CGplvm::updateCovGradient(int j, CMatrix& invKm) const
 {
   // covGrad := 0.5*(invK * Y(:,j) * Y^t(:,j) * invK - invK)
 
-  // (The 'D' factor doesn't need to be on the last term because we add 
-  //  D of these covGrad expressions together in a loop in the caller.  
+  // (The 'D' factor doesn't need to be on the last term because we add
+  //  D of these covGrad expressions together in a loop in the caller.
   //  In other words, this is covGrad for a single process only.)
 
   invKm.resize(invK.getRows(), 1);
@@ -381,7 +409,7 @@ void CGplvm::updateDynCovGradient(int j, CMatrix& invKX) const
 {
   // covGrad := 0.5*(invDynK * Xout(:,j) * Xout(:,j)' * invDynK - invDynK)
 
-  // (The 'd' factor doesn't need to be on the last term because we add 
+  // (The 'd' factor doesn't need to be on the last term because we add
   //  d of these covGrad expressions together in a loop in the caller.)
 
   invKX.resize(invDynK.getRows(), 1);
@@ -435,7 +463,7 @@ void CGplvm::_updateK() const
 void CGplvm::_updateInvK(int dim) const
 {
   LcholK.deepCopy(K);
-  // 
+  //
   //for(int i=0; i<numData; i++)
   //  invK.setVal(invK.getVal(i, i) + 1/getBetaVal(i, dim), i, i);
   LcholK.chol(); /// this will initially be upper triangular.
@@ -502,14 +530,14 @@ double CGplvm::logLikelihood() const
     invKm.symvColCol(0, invK, m, j, 1.0, 0.0, "u");
     // L += invKm' * m(:,j)
     L += invKm.dotColCol(0, m, j);
-    L += logDetK; 
+    L += logDetK;
   }
   if (isDynamicModelLearnt())
   {
     for(int j=0; j<latentDim; j++)
     {
       // This computes invDynK*Xout*Xout', column by column of Xout
-      // Xout and invDynK are set up so that the rows that represent 
+      // Xout and invDynK are set up so that the rows that represent
       // sequence breaks don't contribute.
 
       // invKm := invDynK * Xout(:,j)
@@ -537,7 +565,7 @@ double CGplvm::logLikelihood() const
 	    }
 	}
     }
-  
+
   if(isInputScaleLearnt())
     {
       // scales lead to terms of the form log w_j to be added.
@@ -591,7 +619,7 @@ double CGplvm::logLikelihoodGradient(CMatrix& g) const
     {
       g.addVal(tempG.getVal(i), i);
     }
-    
+
     // This gives us the main dL/dX bit here
     for(int i=0; i<numData; i++)
       {
@@ -604,7 +632,7 @@ double CGplvm::logLikelihoodGradient(CMatrix& g) const
   }
   if(isDynamicModelLearnt())
     {
-      // Xout and invDynK are set up so that the rows that represent 
+      // Xout and invDynK are set up so that the rows that represent
       // sequence breaks don't contribute.
 
       // Reuse gX.  Slightly wasteful in that we don't need derivs of first row.
@@ -638,7 +666,7 @@ double CGplvm::logLikelihoodGradient(CMatrix& g) const
 		  g.addVal(tempG.getVal(i), i+numKernParams);
 		}
 	    }
-	  
+
 	  // This gives us the main dL/dX bit for the dynamics kernel
 	  for(int i=0; i<numData; i++)
 	    {
@@ -656,7 +684,7 @@ double CGplvm::logLikelihoodGradient(CMatrix& g) const
 	      double factor = -1.0*dynamicScalingVal;
 	      gref.addVal(factor*invKX.getVal(i), ind);
 	    }
-	}    
+	}
       if(isLatentRegularised())
 	{
 	  for(int k=0; k<latentDim; k++)
@@ -664,7 +692,7 @@ double CGplvm::logLikelihoodGradient(CMatrix& g) const
 	      // grad of -X magnitude squared for first point.
 	      int ind = xoffset+numData*k;
 	      gref.addVal(-pX->getVal(0, k), ind);
-	    } 
+	    }
 	}
     }
   else
@@ -677,7 +705,7 @@ double CGplvm::logLikelihoodGradient(CMatrix& g) const
 		// grad of -X magnitudes squared, just -X
 		int ind = xoffset+i+numData*k;
 		gref.addVal(-pX->getVal(i, k), ind);
-	      } 
+	      }
 	}
     }
   if(isBackConstrained())
@@ -705,7 +733,7 @@ double CGplvm::logLikelihoodGradient(CMatrix& g) const
       for(int j=0; j<getNumProcesses(); j++)
 	{
 	  // recomputing this again is inefficient (already done in the likelihood).
-	  invKm.symvColCol(0, invK, m, j, 1.0, 0.0, "u");      
+	  invKm.symvColCol(0, invK, m, j, 1.0, 0.0, "u");
 	  int ind = numParams + numData*latentDim + j;
 	  g.setVal(1/pnoise->getScale(j)*(invKm.dotColCol(0, m, j)-1), ind);
 	}
@@ -716,7 +744,7 @@ double CGplvm::logLikelihoodGradient(CMatrix& g) const
 }
 void CGplvm::pointLogLikelihood(const CMatrix& y, const CMatrix& X) const
 {
-  
+
 }
 // Optimise the GPLVM with respect to latent positions and kernel parameters.
 void CGplvm::optimise(const int iters)
@@ -784,7 +812,7 @@ void CGplvm::writeParamsToStream(ostream& out) const
     {
       for(int j=0; j<getNumProcesses(); j++)
 	{
- 	  out << pnoise->getTarget(i, j) << " ";	  
+ 	  out << pnoise->getTarget(i, j) << " ";
 	}
       for(int j=0; j<getLatentDim(); j++)
  	{
@@ -816,7 +844,7 @@ void CGplvm::readParamsFromStream(istream& in)
   setLatentRegularised(readBoolFromStream(in, "latentRegularised"));
   setBackConstrained(readBoolFromStream(in, "backConstrained"));
   setDynamicModelLearnt(readBoolFromStream(in, "dynamicsLearnt"));
-  
+
   pX = new CMatrix(numData, latentDim);
   if(isBackConstrained())
   {
@@ -828,13 +856,13 @@ void CGplvm::readParamsFromStream(istream& in)
   // read kernel from the stream.
   //delete pkern; --- want to destroy it if it exists ... but not sure how to.
   pkern = readKernFromStream(in);
-  
+
   if(isBackConstrained()){
     // future back constraint read.
   }
   if(isDynamicModelLearnt())
     dynKern = readKernFromStream(in);
-  
+
   pnoise = (CScaleNoise*)readNoiseFromStream(in);
   string line;
   vector<string> tokens;
@@ -869,7 +897,7 @@ void CGplvm::readParamsFromStream(istream& in)
 	  throw ndlexceptions::FileFormatError();
 	}
     }
-  
+
   vector<int> labels;
   pX = new CMatrix(numData, latentDim, 0.0);
   CMatrix* pY = new CMatrix(numData, dataDim);
@@ -886,10 +914,10 @@ void CGplvm::readParamsFromStream(istream& in)
       for(int j=0; j<latentDim; j++)
 	{
 	  pX->setVal(atof(tokens[j+dataDim].c_str()), i, j);
-	}      
+	}
       if(labelsPresent)
 	labels.push_back(atoi(tokens[latentDim+dataDim].c_str()));
-	  
+
     }
   pnoise->setTarget(pY);
   CGplvm* pmodel;
@@ -926,7 +954,7 @@ CGplvm* readGplvmFromStream(istream& in)
   pmodel->fromStream(in);
   return pmodel;
 }
-    
+
 CGplvm* readGplvmFromFile(const string modelFileName, const int verbosity)
 {
   // File is m, beta, X
