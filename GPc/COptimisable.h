@@ -154,8 +154,11 @@ class COptimisable {
   {
     if(val == "conjgrad")
       defaultOptimiser = CG;
-    else if(val == "scg")
+    else if(val == "scg"){
       defaultOptimiser = SCG;
+      cout<<"using SCG as optimiser";
+
+    }
     else if(val == "quasinew")
       defaultOptimiser = BFGS;
     else if(val == "graddesc")
@@ -182,14 +185,19 @@ class COptimisable {
   }
   void runDefaultOptimiser()
   {
+    cout<<"in_run_defaultoptimiser"<<endl;
     switch(defaultOptimiser)
     {
     case CG:
       cgOptimise();
       break;
     case SCG:
+    { 
+      cout<<"optimizing using scg, in Coptimisable.h"<<endl;
       scgOptimise();
       break;
+    }
+
     case BFGS:
       lbfgsOptimise();
       break;

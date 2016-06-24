@@ -67,38 +67,38 @@ void COptimisable::gdOptimise()
     oldParams.deepCopy(params);
     computeObjectiveGradParams(gradParams);
     if(momentum>0)
-	{
-	  changeParams.axpy(gradParams, -learnRate/momentum);
-	  params.axpy(changeParams, momentum);
-	  changeParams.scale(momentum);
-	}
-      else
-	{
-	  params.axpy(gradParams, -learnRate);	    
-	}
-      setOptParams(params);
-      if(evalFunc)
-	{
-	  oldObjective = objectiveVal;
-	  objectiveVal = computeObjectiveVal();
-	  diffObjective = fabs(objectiveVal-oldObjective);
-	}
-      if(getVerbosity()>2)
-	{
-	  cout << "Iteration: " << iter << ", objective function: " << objectiveVal << endl;
-	}
-      diffParam = params.maxAbsDiff(oldParams);
-      if(diffObjective<objectiveTol && diffParam<parameterTol)
-	{
-	  cout << "Param difference: " << diffParam << endl;
-	  cout << "Objective difference: " << diffObjective << endl;
-	  cout << "Converged .." << endl;
-	  break;
-	}
-      
-    } 
-  cout << "Parameters: " << endl;
-  cout << params << endl;
+    {
+     changeParams.axpy(gradParams, -learnRate/momentum);
+     params.axpy(changeParams, momentum);
+     changeParams.scale(momentum);
+   }
+   else
+   {
+     params.axpy(gradParams, -learnRate);	    
+   }
+   setOptParams(params);
+   if(evalFunc)
+   {
+     oldObjective = objectiveVal;
+     objectiveVal = computeObjectiveVal();
+     diffObjective = fabs(objectiveVal-oldObjective);
+   }
+   if(getVerbosity()>2)
+   {
+     cout << "Iteration: " << iter << ", objective function: " << objectiveVal << endl;
+   }
+   diffParam = params.maxAbsDiff(oldParams);
+   if(diffObjective<objectiveTol && diffParam<parameterTol)
+   {
+     cout << "Param difference: " << diffParam << endl;
+     cout << "Objective difference: " << diffObjective << endl;
+     cout << "Converged .." << endl;
+     break;
+   }
+   
+ } 
+ cout << "Parameters: " << endl;
+ cout << params << endl;
   /*       if(iter>=getMaxIters()) */
   /* 	cout << "Maximum iterations exceed in gdOptimise(), objective change, " << diffObjective << ", parameter change, " << diffParam << endl; */
 }
@@ -135,35 +135,35 @@ void COptimisable::gdPullbackOptimise()
       diffObjective = oldObjective-objectiveVal;
       if(diffObjective<0)
       {
-	params.deepCopy(oldParams);
-	learnRate = learnRate/2;
-	objectiveVal=oldObjective;
-	setOptParams(params);
-	if(getVerbosity()>2)
-	  cout << "Back tracking, learning rate: " << learnRate << endl;
-      }
-      else
-      {
-	learnRate = learnRate*1.1;
-	break;
-      }
-    }
-    if(getVerbosity()>2)
-    {
-      cout << "Iteration: " << iter << ", objective function: " << objectiveVal << endl;
-    }
-    diffParam = params.maxAbsDiff(oldParams);
-    if(diffObjective<objectiveTol && diffParam<parameterTol)
-    {
-      cout << "Param difference: " << diffParam << endl;
-      cout << "Objective difference: " << diffObjective << endl;
-      cout << "Converged .." << endl;
-      break;
-    }
-    
-  } 
-  cout << "Parameters: " << endl;
-  cout << params << endl;
+       params.deepCopy(oldParams);
+       learnRate = learnRate/2;
+       objectiveVal=oldObjective;
+       setOptParams(params);
+       if(getVerbosity()>2)
+         cout << "Back tracking, learning rate: " << learnRate << endl;
+     }
+     else
+     {
+       learnRate = learnRate*1.1;
+       break;
+     }
+   }
+   if(getVerbosity()>2)
+   {
+    cout << "Iteration: " << iter << ", objective function: " << objectiveVal << endl;
+  }
+  diffParam = params.maxAbsDiff(oldParams);
+  if(diffObjective<objectiveTol && diffParam<parameterTol)
+  {
+    cout << "Param difference: " << diffParam << endl;
+    cout << "Objective difference: " << diffObjective << endl;
+    cout << "Converged .." << endl;
+    break;
+  }
+  
+} 
+cout << "Parameters: " << endl;
+cout << params << endl;
   /*       if(iter>=getMaxIters()) */
   /* 	cout << "Maximum iterations exceed in gdOptimise(), objective change, " << diffObjective << ", parameter change, " << diffParam << endl; */
 }
@@ -215,33 +215,33 @@ void COptimisable::lbfgsOptimise()
     {
       if(iflag==-1)
       {
-	cout << "Warning: lbfgsOptimise: linesearch failed." << endl;
-	break;
-      }
-      else if(iflag == -2)
-      {
-	throw ndlexceptions::Error("An element of the inverse Hessian provided is not positive.");
-      }
-      else if(iflag == -3)
-      {
-	throw ndlexceptions::Error("Inproper input to lbfgs_.");
-      }
-    }
-    else if(iflag==0)
-    {
-      break;
-    }
-    else if(iflag==1)
-    {
-      X.fromArray(Xvals);
-      setOptParams(X);
-      funcEval++;
-    }
-    else
-    {
-      throw ndlexceptions::Error("Unhandled iflag.");
-    }
+       cout << "Warning: lbfgsOptimise: linesearch failed." << endl;
+       break;
+     }
+     else if(iflag == -2)
+     {
+       throw ndlexceptions::Error("An element of the inverse Hessian provided is not positive.");
+     }
+     else if(iflag == -3)
+     {
+       throw ndlexceptions::Error("Inproper input to lbfgs_.");
+     }
+   }
+   else if(iflag==0)
+   {
+    break;
   }
+  else if(iflag==1)
+  {
+    X.fromArray(Xvals);
+    setOptParams(X);
+    funcEval++;
+  }
+  else
+  {
+    throw ndlexceptions::Error("Unhandled iflag.");
+  }
+}
 }
 void COptimisable::scgOptimise()
 {
@@ -300,99 +300,99 @@ void COptimisable::scgOptimise()
     double normp2 = normp*normp;
     // 2
     if(success)
-	{
+    {
 	  // can get a divide by zero here if pp is too small.
-	  
-	  sigma = m_step/normp;
-	  wPlus.deepCopy(w);
-	  wPlus.axpy(p, sigma);
-	  setOptParams(wPlus);
-	  computeObjectiveGradParams(s);
-	  sigmaInv = 1/sigma;
-	  s.scale(sigmaInv);
-	  s.axpy(r, sigmaInv);
-	  delta = s.dotRowRow(0, p, 0);
-	}
-      
+     
+     sigma = m_step/normp;
+     wPlus.deepCopy(w);
+     wPlus.axpy(p, sigma);
+     setOptParams(wPlus);
+     computeObjectiveGradParams(s);
+     sigmaInv = 1/sigma;
+     s.scale(sigmaInv);
+     s.axpy(r, sigmaInv);
+     delta = s.dotRowRow(0, p, 0);
+   }
+   
     // 3 Scale s_iter
-    double lambdaDiff = lambda-lambdaBar;
-    s.axpy(p, lambdaDiff);
-    delta += lambdaDiff*normp;
-      
+   double lambdaDiff = lambda-lambdaBar;
+   s.axpy(p, lambdaDiff);
+   delta += lambdaDiff*normp;
+   
     // 4 
     if(delta <= 0.0) // Make Hessian positive definite.
-	{
-	  double deltaOverNormp2 = delta/normp2;
-	  s.axpy(p, (lambda-2.0*deltaOverNormp2));
-	  
-	  lambdaBar = 2.0*(lambda - deltaOverNormp2);
-	  delta = lambda*normp2 - delta; 
-	  lambda = lambdaBar;
-	}
-      
+    {
+     double deltaOverNormp2 = delta/normp2;
+     s.axpy(p, (lambda-2.0*deltaOverNormp2));
+     
+     lambdaBar = 2.0*(lambda - deltaOverNormp2);
+     delta = lambda*normp2 - delta; 
+     lambda = lambdaBar;
+   }
+   
     // 5  Calculate step size.
-    mu=p.dotRowRow(0, r, 0);
-    alpha = mu/delta;
-      
+   mu=p.dotRowRow(0, r, 0);
+   alpha = mu/delta;
+   
     // 6 Compute the comparison parameter.
-    wPlus.deepCopy(w);
-    wPlus.axpy(p, alpha);
-    setOptParams(wPlus);
-    newObj = computeObjectiveVal();
-    Delta = 2.0*delta*(oldObj - newObj)/(mu*mu);
+   wPlus.deepCopy(w);
+   wPlus.axpy(p, alpha);
+   setOptParams(wPlus);
+   newObj = computeObjectiveVal();
+   Delta = 2.0*delta*(oldObj - newObj)/(mu*mu);
 
     // 7 Check whether a successful error reduction can be made.
     if(Delta >= 0.0)  // update is successful
-      {
-	w.deepCopy(wPlus); 	  
-	oldObj = newObj;
-	computeObjectiveGradParams(rp);
-	rp.negate();
-	lambdaBar = 0; 
-	success = true;
+    {
+     w.deepCopy(wPlus); 	  
+     oldObj = newObj;
+     computeObjectiveGradParams(rp);
+     rp.negate();
+     lambdaBar = 0; 
+     success = true;
 	  // 7.a Check for algorithm restart.
 	  if(iter % nParams == 0) // restart algorithm
-	    p.deepCopy(rp); 
-	  else
-	    {	      
-	      double rpnorm2 = rp.norm2Row(0);
-	      double rrp = r.dotRowRow(0, rp, 0); 
-	      
-	      beta = (rpnorm2 - rrp)/mu;
-	      p.scale(beta); 
-	      p.axpy(rp, 1.0);
-	    }
-	  
-	  r.deepCopy(rp);
-	  
+     p.deepCopy(rp); 
+     else
+     {	      
+       double rpnorm2 = rp.norm2Row(0);
+       double rrp = r.dotRowRow(0, rp, 0); 
+       
+       beta = (rpnorm2 - rrp)/mu;
+       p.scale(beta); 
+       p.axpy(rp, 1.0);
+     }
+   
+   r.deepCopy(rp);
+   
 	  // 7.b Reduce the scale parameter
-	  if(Delta >= 0.75) lambda *= 0.5;
-	  if(lambda<1e-15) lambda = 1e-15;
-	}
+   if(Delta >= 0.75) lambda *= 0.5;
+   if(lambda<1e-15) lambda = 1e-15;
+ }
     else // no reduction in error is possible.
-      {
-	setOptParams(w);
-	lambdaBar = lambda; 
-	success = false; 
-      }
-    
+    {
+     setOptParams(w);
+     lambdaBar = lambda; 
+     success = false; 
+   }
+   
     // 8 Increase the scale parameter
-    if(Delta < 0.25) lambda *= 4.0;
-    
+   if(Delta < 0.25) lambda *= 4.0;
+   
     // 9 Check for convergence       
-    if(getVerbosity()>2)
-      cout << "Iteration: " << iter << " Error: " << oldObj << " Scale: " << lambda << endl;
-    if (success && fabs(p.max()*alpha) < getParamTol() && max(fabs(newObj-oldObj)) < getObjectiveTol())
-      {
-	if(getVerbosity()>2)
-	{
-	  cout << "Convergence criterion for parameters and objective met" << endl;
-	  cout << "Largest tolerance " << fabs(newObj - oldObj) << endl;
-	}
-	return;
-      }
-  }
-  cout << "Warning: Maximum number of iterations has been exceeded" << endl;
+   if(getVerbosity()>2)
+    cout << "Iteration: " << iter << " Error: " << oldObj << " Scale: " << lambda << endl;
+  if (success && fabs(p.max()*alpha) < getParamTol() && max(fabs(newObj-oldObj)) < getObjectiveTol())
+  {
+   if(getVerbosity()>2)
+   {
+     cout << "Convergence criterion for parameters and objective met" << endl;
+     cout << "Largest tolerance " << fabs(newObj - oldObj) << endl;
+   }
+   return;
+ }
+}
+cout << "Warning: Maximum number of iterations has been exceeded" << endl;
 }
 void COptimisable::cgOptimise()
 {
@@ -453,9 +453,9 @@ void COptimisable::cgOptimise()
   CMatrix df3(1, nParams);
   int M = 0;	 
   while((isIterTerminate() 
-	 && iter<getMaxIters())  
-	|| (isFuncEvalTerminate() 
-	    && funcEval<getMaxFuncEvals()))
+    && iter<getMaxIters())  
+   || (isFuncEvalTerminate() 
+     && funcEval<getMaxFuncEvals()))
   {
     iter++; //update number if iterations
     // make a copy of current values
@@ -480,59 +480,59 @@ void COptimisable::cgOptimise()
       success = false;
       while(!success && M>0)
       {
-	try
-	{
-	  M--;
-	  funcEval++;
+       try
+       {
+         M--;
+         funcEval++;
 	  // compute gradient
-	  wPlus.deepCopy(X);
-	  wPlus.axpy(s, x3);
-	  setOptParams(wPlus);  
-	  f3 = computeObjectiveGradParams(df3);
-	  if(!(isnan(f3) || isinf(f3) || df3.isAnyNan() || df3.isAnyInf()))
-	  {
+         wPlus.deepCopy(X);
+         wPlus.axpy(s, x3);
+         setOptParams(wPlus);  
+         f3 = computeObjectiveGradParams(df3);
+         if(!(isnan(f3) || isinf(f3) || df3.isAnyNan() || df3.isAnyInf()))
+         {
 	    // clean computation of gradients, success!
-	    success = true;
-	  }
-	  else
-	  {
-	    if(getVerbosity()>1)
-	      cout << "cgOptimise: Warning gradient or function value was NaN or inf." << endl;
-	  }
-	}
-	catch(ndlexceptions::MatrixNonPosDef err)
-	{
-	  if(getVerbosity()>1)
-	    cout << "cgOptimise: Matrix non-positive definite in gradient of function value computation." << endl;
-	}
-	catch(ndlexceptions::MatrixConditionError err)
-	{
-	  if(getVerbosity()>1)
-	    cout << "cgOptimise: Matrix conditioning error in gradient of function value computation." << endl;
-	}
-	catch(ndlexceptions::MatrixSingular err)
-	{
-	  if(getVerbosity()>1)
-	    cout << "cgOptimise: Matrix singularity error in gradient of function value computation." << endl;
-	}
+           success = true;
+         }
+         else
+         {
+           if(getVerbosity()>1)
+             cout << "cgOptimise: Warning gradient or function value was NaN or inf." << endl;
+         }
+       }
+       catch(ndlexceptions::MatrixNonPosDef err)
+       {
+         if(getVerbosity()>1)
+           cout << "cgOptimise: Matrix non-positive definite in gradient of function value computation." << endl;
+       }
+       catch(ndlexceptions::MatrixConditionError err)
+       {
+         if(getVerbosity()>1)
+           cout << "cgOptimise: Matrix conditioning error in gradient of function value computation." << endl;
+       }
+       catch(ndlexceptions::MatrixSingular err)
+       {
+         if(getVerbosity()>1)
+           cout << "cgOptimise: Matrix singularity error in gradient of function value computation." << endl;
+       }
 	if(!success) // if any of these errors have occured, pull back and retry.
 	{
-	  cout << "Pulling back by half." << endl;
-	  x3 = (x2 + x3)/2; 
-	}
-      }
+   cout << "Pulling back by half." << endl;
+   x3 = (x2 + x3)/2; 
+ }
+}
       if(f3<F0) // keep best values.
       {
-	X0.deepCopy(X);
-	X0.axpy(s, x3);
-	F0 = f3;
-	dF0.deepCopy(df3);
-      }
-      d3 = df3.dotRowRow(0, s, 0);
+       X0.deepCopy(X);
+       X0.axpy(s, x3);
+       F0 = f3;
+       dF0.deepCopy(df3);
+     }
+     d3 = df3.dotRowRow(0, s, 0);
       if(d3>SIG*d0 || f3>f0+x3*RHO*d0 || M==0) // Is line search over?
       {
-	break;
-      }
+       break;
+     }
       x1 = x2; f1 = f2; d1 = d2;   // move point 2 to point 1.
       x2 = x3; f2 = f3; d2 = d3;   // move point 3 to point 2.
       A = 6.0*(f1-f2)+3.0*(d2+d1)*(x2-x1); // do cubic extrapolation.
@@ -545,28 +545,28 @@ void COptimisable::cgOptimise()
 	x3=x2*EXT;   // extrapolate maximum ammount.
       else if(x3<x2+INT*(x2-x1))  // new point too close to previous point?
 	x3=x2+INT*(x2-x1);  // extrapolate minimum amount
-    }
+}
     while((abs(d3)>-SIG*d0 || f3>f0+x3*RHO*d0) && M>0)  // keep interpolating.
     {
       if(d3>0 || f3>f0+x3*RHO*d0) // choose subinterval.
       {
 	x4=x3; f4=f3; d4=d3;   // move point 3 to point 4.
-      }
-      else
-      {
+}
+else
+{
 	x2=x3; f2=f3; d2=d3;  // move point 3 to point 2.
-      }
-      if(f4>f0)
-      {
+}
+if(f4>f0)
+{
 	x3 = x2-(0.5*d2*((x4-x2)*(x4-x2)))/(f4-f2-d2*(x4-x2));  // quadratic interpolation.
-      }
-      else
-      {
+}
+else
+{
 	A = 6.0*(f2-f4)/(x4-x2)+3*(d4+d2);   // cubic interpolation.
 	B = 3.0*(f4-f2)-(2*d2+d4)*(x4-x2);
 	x3 = x2+(sqrt(B*B-A*d2*(x4-x2)*(x4-x2))-B)/A;
-      }
-      if(isnan(x3) || isinf(x3))
+}
+if(isnan(x3) || isinf(x3))
 	x3 = (x2+x4)/2.0;                // bisect if there was a numerical problem.
       x3 = max(min(x3, x4-INT*(x4-x2)), x2+INT*(x4-x2)); // don't accept too close.
       // add s times x3 to wPlus.
@@ -576,12 +576,12 @@ void COptimisable::cgOptimise()
       f3 = computeObjectiveGradParams(df3);
       if(f3<F0) // keep best values.
       {
-	F0 = f3;
-	dF0.deepCopy(df3);
-	X0.deepCopy(wPlus);
-      }
-      funcEval++;
-      M--;
+       F0 = f3;
+       dF0.deepCopy(df3);
+       X0.deepCopy(wPlus);
+     }
+     funcEval++;
+     M--;
       d3 = df3.dotRowRow(0, s, 0);  // new slope.
     } // end of interpolation.
     if (abs(d3)<-SIG*d0 && f3 < f0+x3*RHO*d0)  // if line search succeeded.
@@ -599,42 +599,42 @@ void COptimisable::cgOptimise()
       if(d0>0)
       {
         // not negative --- use steepest descent.	
-	s.deepCopy(df0);
-	s.negate(); 
-	d0 = -s.norm2Row(0);
-      }
-      x3 = x3* min(RATIO, d3/(d0-__DBL_MIN__));
-      ls_failed = false;
-    }
-    else
-    {
+       s.deepCopy(df0);
+       s.negate(); 
+       d0 = -s.norm2Row(0);
+     }
+     x3 = x3* min(RATIO, d3/(d0-__DBL_MIN__));
+     ls_failed = false;
+   }
+   else
+   {
       // revert the line search failed, restore best point.
-      X.deepCopy(X0);
-      f0=F0;
-      df0.deepCopy(dF0);
-      if(ls_failed || (isIterTerminate() && iter>=getMaxIters()) || (isFuncEvalTerminate() && funcEval>=getMaxFuncEvals()))
-      { 
+    X.deepCopy(X0);
+    f0=F0;
+    df0.deepCopy(dF0);
+    if(ls_failed || (isIterTerminate() && iter>=getMaxIters()) || (isFuncEvalTerminate() && funcEval>=getMaxFuncEvals()))
+    { 
 	// line search failed twice in a row, or iterations are exceeded.
 	//Need a tolerance check here!!.
-	break;
-      }
+     break;
+   }
       // restart from steepest descent direction.
-      s.deepCopy(df0);
-      s.negate();
-      d0 = -s.norm2Row(0);
-      x3 = 1/(1-d0);
-      ls_failed = true;
-    }
-  }
-  if(isIterTerminate() && iter >= getMaxIters())
-  {
+   s.deepCopy(df0);
+   s.negate();
+   d0 = -s.norm2Row(0);
+   x3 = 1/(1-d0);
+   ls_failed = true;
+ }
+}
+if(isIterTerminate() && iter >= getMaxIters())
+{
     // max iters exceeded.
-    cout << "cgOptimise: Warning: Maximum number of iterations has been exceeded" << endl;
-  }
-  if(isFuncEvalTerminate() && funcEval >= getMaxFuncEvals())
-  {
+  cout << "cgOptimise: Warning: Maximum number of iterations has been exceeded" << endl;
+}
+if(isFuncEvalTerminate() && funcEval >= getMaxFuncEvals())
+{
     // max func evaluations exceeded.
-    cout << "cgOptimise: Warning: Maximum number of function evalutaions has been exceeded" << endl;
-  }
-  
+  cout << "cgOptimise: Warning: Maximum number of function evalutaions has been exceeded" << endl;
+}
+
 }

@@ -430,6 +430,7 @@ double CTensorKern::computeElement(const CMatrix& X1, unsigned int index1,
 				   const CMatrix& X2, unsigned int index2) const
 {
   double y=1.0;
+  cout<<"components size = "<<components.size()<<endl;
   for(size_t i=0; i<components.size(); i++)
     y*=components[i]->computeElement(X1, index1, X2, index2);
   return y;

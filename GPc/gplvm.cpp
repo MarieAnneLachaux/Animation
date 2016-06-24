@@ -586,6 +586,7 @@ void CClgplvm::learn()
 
 
   // Optimise the GP-LVM
+  cout<<"line 589 in gplvm, before optimisation of pmodel"<<endl; 
   pmodel->optimise(iters);
   if(labelsProvided)
     // set labels after optimisation (to show they aren't being used!)
@@ -593,29 +594,29 @@ void CClgplvm::learn()
   string comment="";
   switch(getFileFormat())
   {
-  case 0: /// GPLVM file format.
-    comment = "Run as:";
-    for(int i=0; i<argc; i++)
-	{
-	  comment+=" ";
-	  comment+=argv[i];
-	}
-    comment += " with seed " + ndlstrutil::itoa(getSeed()) + ".";
-    writeGplvmToFile(*pmodel, modelFileName, comment);
-    break;
-  case 1: /// Matlab file format.
-#ifdef _NDLMATLAB
-    // Write matlab output.
-    pmodel->writeMatlabFile(modelFileName, "gplvmInfo");
-    pmodel->pkern->updateMatlabFile(modelFileName, "kern");
-    X.updateMatlabFile(modelFileName, "X");
-    Y.updateMatlabFile(modelFileName, "Y");
-#else 
-    exitError("Error MATLAB not incorporated at compile time.");
-#endif
-    break;
-  default:
-    exitError("Unrecognised file format number.");
+    case 0: /// GPLVM file format.USING
+      comment = "Run as:";
+      for(int i=0; i<argc; i++)
+    	 {
+    	  comment+=" ";
+    	  comment+=argv[i];
+    	 }
+      comment += " with seed " + ndlstrutil::itoa(getSeed()) + ".";
+      writeGplvmToFile(*pmodel, modelFileName, comment);
+      break;
+    case 1: /// Matlab file format.
+      #ifdef _NDLMATLAB
+          // Write matlab output.
+          pmodel->writeMatlabFile(modelFileName, "gplvmInfo");
+          pmodel->pkern->updateMatlabFile(modelFileName, "kern");
+          X.updateMatlabFile(modelFileName, "X");
+          Y.updateMatlabFile(modelFileName, "Y");
+      #else 
+          exitError("Error MATLAB not incorporated at compile time.");
+      #endif
+      break;
+    default:
+      exitError("Unrecognised file format number.");
       
   }
   exitNormal();
@@ -706,7 +707,7 @@ void CClgplvm::gnuplot()
       exitError("Plotting is only implemented for 2 dimensional latent spaces.");
     }
 
-  // If there is a labels file prepare files separately.
+  // If there is a labels file prepare files separately. ISN'T NEEDED SINCE NO LABELS
   vector<int> labels;
   vector<bool> labelFileWritten;
   int maxVal=0;
@@ -717,11 +718,11 @@ void CClgplvm::gnuplot()
       string line;
       if(!in) throw ndlexceptions::FileReadError(labelFileName);
       while(getline(in, line))
-	{
-	  int index = atol(line.c_str());
-	  if(index<0) throw ndlexceptions::FileFormatError(labelFileName);	  
-	  labels.push_back(index);
-	}
+    	{
+    	  int index = atol(line.c_str());
+    	  if(index<0) throw ndlexceptions::FileFormatError(labelFileName);	  
+    	  labels.push_back(index);
+    	}
       in.close();
       if(labels.size() != pmodel->pX->getRows()) throw ndlexceptions::Error("Incorrect number of labels");
       pmodel->setLabels(labels);
@@ -765,7 +766,7 @@ void CClgplvm::gnuplot()
       Xext.toFile(name+"_latent_data.dat");
     }
 
-  // Prepare the background variance plot.
+  // Prepare the background variance plot. PLACE TO LOOK AT
   CMatrix minVals(1, pmodel->pX->getCols());
   CMatrix maxVals(1, pmodel->pX->getCols());
   pmodel->pX->maxRow(maxVals);
