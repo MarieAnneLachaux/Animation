@@ -788,7 +788,6 @@ void CGplvm::writeParamsToStream(ostream& out) const
     out << "latentRegularised=" << isLatentRegularised() << endl;
     out << "backConstrained=" << isBackConstrained() << endl;
     out << "dynamicsLearnt=" << isDynamicModelLearnt() << endl;
-    out << "start of pkern" << endl;
 
     pkern->toStream(out);
     if(isBackConstrained()){
@@ -797,7 +796,6 @@ void CGplvm::writeParamsToStream(ostream& out) const
     if(isDynamicModelLearnt())
         dynKern->toStream(out);
 
-    out << "END OF pkern, START OF pnoise" << endl;
 
     pnoise->toStream(out);
     out << "Y:" << getNumProcesses() << ",X:" << getLatentDim();

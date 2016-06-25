@@ -10,7 +10,7 @@ VISUALIZATION
 ===
 the result of the upper command is swagger.model. For visualization, run
 ```sh
-./gplvm gnuplot swagger.model swagger
+./gplvm gnuplot swagger_back_constrained.model swagger_back_constrained
 ```
 
 the upper command creates swagger_plot.gp which is a plot for gnuplot,

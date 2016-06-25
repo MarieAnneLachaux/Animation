@@ -7,7 +7,7 @@
 
 include make.linux
 
-all: gplvm ivm gp libgp$(LIBSEXT) libgp$(LIBDEXT)
+all: gplvm main ivm gp libgp$(LIBSEXT) libgp$(LIBDEXT)
 
 gplvm: gplvm.o CClctrl.o CGplvm.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o
 	$(LD) ${XLINKERFLAGS} -o gplvm gplvm.o CGplvm.o CClctrl.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o $(LDFLAGS)
@@ -17,6 +17,15 @@ gplvm.o: gplvm.cpp gplvm.h ndlexceptions.h ndlstrutil.h CMatrix.h \
   CTransform.h CDataModel.h CDist.h CGplvm.h CMltools.h COptimisable.h \
   CNoise.h CClctrl.h
 	$(CC) -c gplvm.cpp -o gplvm.o $(CCFLAGS)
+
+main: main.o CClctrl.o CGplvm.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o
+			$(LD) ${XLINKERFLAGS} -o main main.o CGplvm.o CClctrl.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o $(LDFLAGS)
+
+main.o: main.cpp ndlexceptions.h ndlstrutil.h CMatrix.h \
+  ndlassert.h CNdlInterfaces.h ndlutil.h ndlfortran.h lapack.h CKern.h \
+  CTransform.h CDataModel.h CDist.h CGplvm.h CMltools.h COptimisable.h \
+  CNoise.h CClctrl.h CClgplvm.h
+	$(CC) -c main.cpp -o main.o $(CCFLAGS)
 
 ivm: ivm.o CClctrl.o CIvm.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o
 	$(LD) ${XLINKERFLAGS} -o ivm  ivm.o CClctrl.o CIvm.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o $(LDFLAGS)
@@ -40,10 +49,10 @@ gp.o: gp.cpp gp.h ndlexceptions.h ndlstrutil.h CMatrix.h ndlassert.h \
 
 
 # To compile tests, the MATLAB interface must be enabled (i.e. define _NDLMATLAB)
-tests: testDist testGp testIvm testKern testMatrix testMltools testNdlutil testNoise testTransform  
+tests: testDist testGp testIvm testKern testMatrix testMltools testNdlutil testNoise testTransform
 
 testDist: testDist.o CMatrix.o ndlfortran.o CTransform.o COptimisable.o CDist.o ndlutil.o ndlstrutil.o CClctrl.o
-	$(LD) ${XLINKERFLAGS} -o testDist testDist.o CMatrix.o ndlfortran.o CTransform.o COptimisable.o CDist.o ndlutil.o ndlstrutil.o CClctrl.o $(LDFLAGS) 
+	$(LD) ${XLINKERFLAGS} -o testDist testDist.o CMatrix.o ndlfortran.o CTransform.o COptimisable.o CDist.o ndlutil.o ndlstrutil.o CClctrl.o $(LDFLAGS)
 
 testDist.o: testDist.cpp CDist.h CTransform.h CMatrix.h CClctrl.h
 	$(CC) -c testDist.cpp -o testDist.o $(CCFLAGS)
@@ -53,29 +62,29 @@ testGp: testGp.o CGp.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CT
 
 testGp.o: testGp.cpp CGp.h CKern.h CMatrix.h CClctrl.h
 	$(CC) -c testGp.cpp -o testGp.o $(CCFLAGS)
- 
+
 testIvm: testIvm.o CIvm.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o CClctrl.o CMltools.o
 	$(LD) ${XLINKERFLAGS} -o testIvm  testIvm.o CIvm.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o CClctrl.o CMltools.o $(LDFLAGS)
 
-testIvm.o: testIvm.cpp CIvm.h CKern.h CMatrix.h CClctrl.h 
+testIvm.o: testIvm.cpp CIvm.h CKern.h CMatrix.h CClctrl.h
 	$(CC) -c testIvm.cpp -o testIvm.o $(CCFLAGS)
 
 testKern: testKern.o CMatrix.o ndlfortran.o CKern.o CTransform.o COptimisable.o CDist.o ndlutil.o ndlstrutil.o CClctrl.o
-	$(LD) ${XLINKERFLAGS} -o testKern testKern.o CMatrix.o ndlfortran.o CKern.o CTransform.o COptimisable.o CDist.o ndlutil.o ndlstrutil.o CClctrl.o $(LDFLAGS) 
+	$(LD) ${XLINKERFLAGS} -o testKern testKern.o CMatrix.o ndlfortran.o CKern.o CTransform.o COptimisable.o CDist.o ndlutil.o ndlstrutil.o CClctrl.o $(LDFLAGS)
 
 testKern.o: testKern.cpp CKern.h CDist.h CTransform.h CMatrix.h CClctrl.h
 	$(CC) -c testKern.cpp -o testKern.o $(CCFLAGS)
 
 testMatrix: testMatrix.o CMatrix.o ndlfortran.o ndlstrutil.o ndlutil.o CClctrl.o
-	$(LD) ${XLINKERFLAGS} -o testMatrix testMatrix.o CMatrix.o ndlfortran.o ndlstrutil.o ndlutil.o CClctrl.o $(LDFLAGS) 
+	$(LD) ${XLINKERFLAGS} -o testMatrix testMatrix.o CMatrix.o ndlfortran.o ndlstrutil.o ndlutil.o CClctrl.o $(LDFLAGS)
 
 testMatrix.o: testMatrix.cpp CMatrix.h CClctrl.h
 	$(CC) -c testMatrix.cpp  -o testMatrix.o $(CCFLAGS)
 
-testMltools: testMltools.o CMltools.o CMatrix.o ndlfortran.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CClctrl.o 
+testMltools: testMltools.o CMltools.o CMatrix.o ndlfortran.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CClctrl.o
 	$(LD) ${XLINKERFLAGS} -o testMltools  testMltools.o CMltools.o CMatrix.o ndlfortran.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CClctrl.o $(LDFLAGS)
 
-testMltools.o: testMltools.cpp CMltools.h CKern.h CMatrix.h CClctrl.h 
+testMltools.o: testMltools.cpp CMltools.h CKern.h CMatrix.h CClctrl.h
 	$(CC) -c testMltools.cpp -o testMltools.o $(CCFLAGS)
 
 testNdlutil: testNdlutil.o ndlutil.o ndlstrutil.o CMatrix.o ndlfortran.o CClctrl.o
@@ -91,7 +100,7 @@ testNoise.o: testNoise.cpp CNoise.h CMatrix.h CClctrl.h
 	$(CC) -c testNoise.cpp -o testNoise.o $(CCFLAGS)
 
 testTransform: testTransform.o CMatrix.o ndlfortran.o  CTransform.o ndlutil.o ndlstrutil.o CClctrl.o
-	$(LD) ${XLINKERFLAGS} -o testTransform testTransform.o CMatrix.o ndlfortran.o CTransform.o ndlutil.o ndlstrutil.o CClctrl.o $(LDFLAGS) 
+	$(LD) ${XLINKERFLAGS} -o testTransform testTransform.o CMatrix.o ndlfortran.o CTransform.o ndlutil.o ndlstrutil.o CClctrl.o $(LDFLAGS)
 
 testTransform.o: testTransform.cpp CTransform.h CMatrix.h CClctrl.h
 	$(CC) -c testTransform.cpp -o testTransform.o $(CCFLAGS)
