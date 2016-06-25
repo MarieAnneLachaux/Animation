@@ -13,7 +13,7 @@ int readSvmlDataFile(CMatrix& X, CMatrix& y, const string fileName);
 int main(int argc, char* argv[]){
   cout<<"hello world"<<endl;
 
-  string trainDataFileName="examples/swagger.svml";
+  string trainDataFileName="examples/new_pose.svml";
   /*
   string modelFileName="swagger_back_constrained.model";
   CGplvm* pmodel=readGplvmFromFile(modelFileName, 2);
@@ -63,7 +63,7 @@ CMatrix K;
 
 K.resize(numData,numData);
 
-string modelFileName="swagger_back_constrained.model";
+string modelFileName="new_pose.model";
 CGplvm* pmodel=readGplvmFromFile(modelFileName, 2);
 pmodel->pkern->display(cout);
 
@@ -147,6 +147,20 @@ for(int j=0;j<vector.getCols();j++){
 cout<<diffvector<<endl;
 cout<<"absdiff = "<<absdiff<<endl;
 
+CMatrix rev;
+rev.resize(1,vector.getCols());
+for(int j=0;j<vector.getCols();j++){
+  double val = vector.getVal(j) + ymean.getVal(j);
+  rev.setVal(val,j);
+}
+
+cout<<rev<<endl;
+cout<<rev.getCols()<<endl;
+ofstream myfile;
+myfile.open ("exampleoutput.txt");
+myfile << rev;
+myfile.close();
+return 0;
 
 
 return 0;
