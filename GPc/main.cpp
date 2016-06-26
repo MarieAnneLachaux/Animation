@@ -9,6 +9,9 @@
 #include "CClgplvm.h"
 #include <limits>
 
+/* L'argument numero 1 de cette fonction est la première pose enlevée
+ * l'argument numéro 2 est le nombre de frame qui a été enlevé*/
+
 int readSvmlDataFile(CMatrix& X, CMatrix& y, const string fileName);
 
 int generator(int argc, char* argv[]){
@@ -105,69 +108,78 @@ invK.pdinv(LcholK);
 
 //GET x
 int frame_n = atoi(argv[1]);
-int option = atoi(argv[2]);
-double num_temp_0,num_temp_1;
-if(option == 0){
- num_temp_0 =( pmodel->pX->getVal(frame_n-1,0)+pmodel->pX->getVal(frame_n+1,0) )/2.0;
- num_temp_1 =( pmodel->pX->getVal(frame_n-1,1)+pmodel->pX->getVal(frame_n+1,1) )/2.0 ;
-}
-else if(option == 1){
- num_temp_0 = pmodel->pX->getVal(frame_n,0);
- num_temp_1 = pmodel->pX->getVal(frame_n,1);
-}
-else if(option == 2){
- num_temp_0 =( pmodel->pX->getVal(frame_n,0)+pmodel->pX->getVal(frame_n+1,0) )/2.0;
- num_temp_1 =( pmodel->pX->getVal(frame_n,1)+pmodel->pX->getVal(frame_n+1,1) )/2.0 ;
+int n = atoi(argv[2]);
+double matrice[n][2];
+
+for (int i=1; i<=n; i++){
+    matrice[1][i]=i/(n+1);
+    matrice[2][i]=1-i/(n+1);
 }
 
-Ktemp.setVal(num_temp_0, 0, 0);
-Ktemp.setVal(num_temp_1, 0, 1);
+CMatrix revMatrix[n];
 
-CMatrix Kx;
-Kx.resize(1,numData);
-for(int j=0; j<numData; j++)
-{
-  kVal=pkern->computeElement(Ktemp, 0, *pmodel->pX, j);
-  Kx.setVal(kVal, 0, j);
-}
+// Calcul des poses manquantes
+
+for (int i=0; i<n; i++){
+
+        double num_temp_0,num_temp_1;
+
+        num_temp_0 =( pmodel->pX->getVal(frame_n-1+i,0)+pmodel->pX->getVal(frame_n+1+i,0) )*matrice[i][0];
+        num_temp_1 =( pmodel->pX->getVal(frame_n-1+i,1)+pmodel->pX->getVal(frame_n+1+i,1) )*matrice[i][1];
+
+        Ktemp.setVal(num_temp_0, 0, 0);
+        Ktemp.setVal(num_temp_1, 0, 1);
+
+        CMatrix Kx;
+        Kx.resize(1,numData);
+        for(int j=0; j<numData; j++)
+        {
+          kVal=pkern->computeElement(Ktemp, 0, *pmodel->pX, j);
+          Kx.setVal(kVal, 0, j);
+        }
 
 
 
-Y.trans();
-CMatrix tempproduct = multiply(Y,invK);
-Kx.trans();
-CMatrix vector = multiply(tempproduct, Kx);
-vector.trans();
-Y.trans();
+        Y.trans();
+        CMatrix tempproduct = multiply(Y,invK);
+        Kx.trans();
+        CMatrix vector = multiply(tempproduct, Kx);
+        vector.trans();
+        Y.trans();
 
-CMatrix diffvector;
-double absdiff = 0;
-diffvector.resize(1,vector.getCols());
-for(int j=0;j<vector.getCols();j++){
-  //double val = (Y.getVal(frame_n, j)- vector.getVal(j))/(Y.getVal(frame_n, j) + numeric_limits<float>::min());
-  //double val = abs(Y.getVal(frame_n, j)- vector.getVal(j));
-  double val = abs((Y.getVal(frame_n, j)- vector.getVal(j))/(ymean.getVal(j) + 0.000000000000001));
-  diffvector.setVal(val,j);
-  absdiff += val;
-}
+        CMatrix diffvector;
+        double absdiff = 0;
+        diffvector.resize(1,vector.getCols());
+        for(int j=0;j<vector.getCols();j++){
+          //double val = (Y.getVal(frame_n, j)- vector.getVal(j))/(Y.getVal(frame_n, j) + numeric_limits<float>::min());
+          //double val = abs(Y.getVal(frame_n, j)- vector.getVal(j));
+          double val = abs((Y.getVal(frame_n, j)- vector.getVal(j))/(ymean.getVal(j) + 0.000000000000001));
+          diffvector.setVal(val,j);
+          absdiff += val;
+        }
 
-cout<<diffvector<<endl;
-cout<<"absdiff = "<<absdiff<<endl;
+        cout<<diffvector<<endl;
+        cout<<"absdiff = "<<absdiff<<endl;
 
-CMatrix rev;
-rev.resize(1,vector.getCols());
-for(int j=0;j<vector.getCols();j++){
-  double val = vector.getVal(j) + ymean.getVal(j);
-  rev.setVal(val,j);
-}
+        CMatrix rev;
+        rev.resize(1,vector.getCols());
+        for(int j=0;j<vector.getCols();j++){
+          double val = vector.getVal(j) + ymean.getVal(j);
+          rev.setVal(val,j);
+        }
 
-cout<<rev<<endl;
-cout<<rev.getCols()<<endl;
+        revMatrix[i].deepCopy(rev);
+        cout<<rev<<endl;
+        cout<<rev.getCols()<<endl;
+
+        }
+
 ofstream myfile;
 myfile.open ("exampleoutput.txt");
-myfile << rev;
+for(int i = 0;i<n;i++){
+    myfile<<revMatrix[i]<<endl;
+}
 myfile.close();
-
 return 0;
 
 }
