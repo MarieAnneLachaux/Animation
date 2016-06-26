@@ -25,7 +25,7 @@ main.o: main.cpp ndlexceptions.h ndlstrutil.h CMatrix.h \
   ndlassert.h CNdlInterfaces.h ndlutil.h ndlfortran.h lapack.h CKern.h \
   CTransform.h CDataModel.h CDist.h CGplvm.h CMltools.h COptimisable.h \
   CNoise.h CClctrl.h CClgplvm.h
-	$(CC) -c main.cpp -o main.o $(CCFLAGS)
+	$(CC) -fPIC -c main.cpp -o main.o $(CCFLAGS)
 
 ivm: ivm.o CClctrl.o CIvm.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o
 	$(LD) ${XLINKERFLAGS} -o ivm  ivm.o CClctrl.o CIvm.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o $(LDFLAGS)

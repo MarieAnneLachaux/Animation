@@ -10,7 +10,8 @@
 #include <limits>
 
 int readSvmlDataFile(CMatrix& X, CMatrix& y, const string fileName);
-int main(int argc, char* argv[]){
+
+int generator(int argc, char* argv[]){
   cout<<"hello world"<<endl;
 
   string trainDataFileName="examples/new_pose.svml";
@@ -92,6 +93,16 @@ Ktemp.resize(1,2);
 cout<<pmodel->pX->getRows()<<endl;//27
 cout<<pmodel->pX->getCols()<<endl;//2
 
+
+//calculate invK
+CMatrix invK;
+invK.resize(numData,numData);
+CMatrix LcholK;
+LcholK.deepCopy(K);
+LcholK.chol(); /// this will initially be upper triangular.
+invK.setSymmetric(true);
+invK.pdinv(LcholK);
+
 //GET x
 int frame_n = atoi(argv[1]);
 int option = atoi(argv[2]);
@@ -100,9 +111,13 @@ if(option == 0){
  num_temp_0 =( pmodel->pX->getVal(frame_n-1,0)+pmodel->pX->getVal(frame_n+1,0) )/2.0;
  num_temp_1 =( pmodel->pX->getVal(frame_n-1,1)+pmodel->pX->getVal(frame_n+1,1) )/2.0 ;
 }
-else{
+else if(option == 1){
  num_temp_0 = pmodel->pX->getVal(frame_n,0);
  num_temp_1 = pmodel->pX->getVal(frame_n,1);
+}
+else if(option == 2){
+ num_temp_0 =( pmodel->pX->getVal(frame_n,0)+pmodel->pX->getVal(frame_n+1,0) )/2.0;
+ num_temp_1 =( pmodel->pX->getVal(frame_n,1)+pmodel->pX->getVal(frame_n+1,1) )/2.0 ;
 }
 
 Ktemp.setVal(num_temp_0, 0, 0);
@@ -117,14 +132,6 @@ for(int j=0; j<numData; j++)
 }
 
 
-//calculate invK
-CMatrix invK;
-invK.resize(numData,numData);
-CMatrix LcholK;
-LcholK.deepCopy(K);
-LcholK.chol(); /// this will initially be upper triangular.
-invK.setSymmetric(true);
-invK.pdinv(LcholK);
 
 Y.trans();
 CMatrix tempproduct = multiply(Y,invK);
@@ -160,13 +167,15 @@ ofstream myfile;
 myfile.open ("exampleoutput.txt");
 myfile << rev;
 myfile.close();
-return 0;
-
 
 return 0;
 
 }
 
+int main(int argc, char* argv[]){
+  generator(argc, argv);
+  return 0;
+}
 int readSvmlDataFile(CMatrix& X, CMatrix& y, const string fileName)
 {
   ifstream in(fileName.c_str());
