@@ -72,7 +72,7 @@ CGplvm* pmodel=readGplvmFromFile(modelFileName, 2);
 pmodel->pkern->display(cout);
 
 CKern* pkern = pmodel->pkern;
-pkern->display(cout);
+//pkern->display(cout);
 
 //calculate K
 double kVal=0.0;
@@ -112,8 +112,8 @@ int n = atoi(argv[2]);
 double matrice[n][2];
 
 for (int i=1; i<=n; i++){
-    matrice[1][i]=i/(n+1);
-    matrice[2][i]=1-i/(n+1);
+  matrice[1][i]=1-(i/(n+1));
+  matrice[2][i]=i/(n+1);
 }
 
 CMatrix revMatrix[n];
@@ -122,62 +122,62 @@ CMatrix revMatrix[n];
 
 for (int i=0; i<n; i++){
 
-        double num_temp_0,num_temp_1;
+  double num_temp_0,num_temp_1;
 
-        num_temp_0 =( pmodel->pX->getVal(frame_n-1+i,0)+pmodel->pX->getVal(frame_n+1+i,0) )*matrice[i][0];
-        num_temp_1 =( pmodel->pX->getVal(frame_n-1+i,1)+pmodel->pX->getVal(frame_n+1+i,1) )*matrice[i][1];
+  num_temp_0 =pmodel->pX->getVal(frame_n,0) * matrice[1][i]+pmodel->pX->getVal(frame_n+1,0)*matrice[2][i];
+  num_temp_1 =pmodel->pX->getVal(frame_n,1) * matrice[1][i]+pmodel->pX->getVal(frame_n+1,1)*matrice[2][i];
 
-        Ktemp.setVal(num_temp_0, 0, 0);
-        Ktemp.setVal(num_temp_1, 0, 1);
+  Ktemp.setVal(num_temp_0, 0, 0);
+  Ktemp.setVal(num_temp_1, 0, 1);
 
-        CMatrix Kx;
-        Kx.resize(1,numData);
-        for(int j=0; j<numData; j++)
-        {
-          kVal=pkern->computeElement(Ktemp, 0, *pmodel->pX, j);
-          Kx.setVal(kVal, 0, j);
-        }
+  CMatrix Kx;
+  Kx.resize(1,numData);
+  for(int j=0; j<numData; j++)
+  {
+    kVal=pkern->computeElement(Ktemp, 0, *pmodel->pX, j);
+    Kx.setVal(kVal, 0, j);
+  }
 
 
 
-        Y.trans();
-        CMatrix tempproduct = multiply(Y,invK);
-        Kx.trans();
-        CMatrix vector = multiply(tempproduct, Kx);
-        vector.trans();
-        Y.trans();
+  Y.trans();
+  CMatrix tempproduct = multiply(Y,invK);
+  Kx.trans();
+  CMatrix vector = multiply(tempproduct, Kx);
+  vector.trans();
+  Y.trans();
 
-        CMatrix diffvector;
-        double absdiff = 0;
-        diffvector.resize(1,vector.getCols());
-        for(int j=0;j<vector.getCols();j++){
+  CMatrix diffvector;
+  double absdiff = 0;
+  diffvector.resize(1,vector.getCols());
+  for(int j=0;j<vector.getCols();j++){
           //double val = (Y.getVal(frame_n, j)- vector.getVal(j))/(Y.getVal(frame_n, j) + numeric_limits<float>::min());
           //double val = abs(Y.getVal(frame_n, j)- vector.getVal(j));
-          double val = abs((Y.getVal(frame_n, j)- vector.getVal(j))/(ymean.getVal(j) + 0.000000000000001));
-          diffvector.setVal(val,j);
-          absdiff += val;
-        }
+    double val = abs((Y.getVal(frame_n, j)- vector.getVal(j))/(ymean.getVal(j) + 0.000000000000001));
+    diffvector.setVal(val,j);
+    absdiff += val;
+  }
 
-        cout<<diffvector<<endl;
-        cout<<"absdiff = "<<absdiff<<endl;
+  cout<<diffvector<<endl;
+  cout<<"absdiff = "<<absdiff<<endl;
 
-        CMatrix rev;
-        rev.resize(1,vector.getCols());
-        for(int j=0;j<vector.getCols();j++){
-          double val = vector.getVal(j) + ymean.getVal(j);
-          rev.setVal(val,j);
-        }
+  CMatrix rev;
+  rev.resize(1,vector.getCols());
+  for(int j=0;j<vector.getCols();j++){
+    double val = vector.getVal(j) + ymean.getVal(j);
+    rev.setVal(val,j);
+  }
 
-        revMatrix[i].deepCopy(rev);
-        cout<<rev<<endl;
-        cout<<rev.getCols()<<endl;
+  revMatrix[i].deepCopy(rev);
+  cout<<rev<<endl;
+  cout<<rev.getCols()<<endl;
 
-        }
+}
 
 ofstream myfile;
 myfile.open ("exampleoutput.txt");
 for(int i = 0;i<n;i++){
-    myfile<<revMatrix[i]<<endl;
+  myfile<<revMatrix[i]<<endl;
 }
 myfile.close();
 return 0;
@@ -188,6 +188,7 @@ int main(int argc, char* argv[]){
   generator(argc, argv);
   return 0;
 }
+
 int readSvmlDataFile(CMatrix& X, CMatrix& y, const string fileName)
 {
   ifstream in(fileName.c_str());
@@ -203,9 +204,9 @@ int readSvmlDataFile(CMatrix& X, CMatrix& y, const string fileName)
     featureRead=false;
 
     if(line[line.size()-1]=='\r')
-    line.erase(line.size()-1);
+      line.erase(line.size()-1);
     if(line[0]=='#')
-    continue;
+      continue;
     numData++;
     int pos=0;
     while(pos<line.size())
@@ -231,7 +232,7 @@ int readSvmlDataFile(CMatrix& X, CMatrix& y, const string fileName)
           string featStr=token.substr(0, ind);
           int featNum = atoi(featStr.c_str());
           if(featNum>maxFeat)
-          maxFeat=featNum;
+            maxFeat=featNum;
         }
         else
         {
@@ -255,10 +256,10 @@ int readSvmlDataFile(CMatrix& X, CMatrix& y, const string fileName)
   while(getline(inToo, line))
   {
     if(line[line.size()-1]=='\r')
-    line.erase(line.size()-1);
+      line.erase(line.size()-1);
     featureRead=false;
     if(line[0]=='#')
-    continue;
+      continue;
     else
     {
       int pos=0;
