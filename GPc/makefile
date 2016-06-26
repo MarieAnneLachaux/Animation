@@ -7,16 +7,8 @@
 
 include make.linux
 
-all: gplvm main ivm gp libgp$(LIBSEXT) libgp$(LIBDEXT)
+all: gplvm main 
 
-gplvm: gplvm.o CClctrl.o CGplvm.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o
-	$(LD) ${XLINKERFLAGS} -o gplvm gplvm.o CGplvm.o CClctrl.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o $(LDFLAGS)
-
-gplvm.o: gplvm.cpp gplvm.h ndlexceptions.h ndlstrutil.h CMatrix.h \
-  ndlassert.h CNdlInterfaces.h ndlutil.h ndlfortran.h lapack.h CKern.h \
-  CTransform.h CDataModel.h CDist.h CGplvm.h CMltools.h COptimisable.h \
-  CNoise.h CClctrl.h
-	$(CC) -c gplvm.cpp -o gplvm.o $(CCFLAGS)
 
 main: main.o CClctrl.o CGplvm.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o
 			$(LD) ${XLINKERFLAGS} -o main main.o CGplvm.o CClctrl.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o $(LDFLAGS)
@@ -27,25 +19,14 @@ main.o: main.cpp ndlexceptions.h ndlstrutil.h CMatrix.h \
   CNoise.h CClctrl.h CClgplvm.h
 	$(CC) -fPIC -c main.cpp -o main.o $(CCFLAGS)
 
-ivm: ivm.o CClctrl.o CIvm.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o
-	$(LD) ${XLINKERFLAGS} -o ivm  ivm.o CClctrl.o CIvm.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o $(LDFLAGS)
+gplvm: gplvm.o CClctrl.o CGplvm.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o
+	$(LD) ${XLINKERFLAGS} -o gplvm gplvm.o CGplvm.o CClctrl.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o $(LDFLAGS)
 
-ivm.o: ivm.cpp CIvm.h CKern.h CMatrix.h ivm.h CClctrl.h
-	$(CC) -c ivm.cpp -o ivm.o $(CCFLAGS)
-
-gp: gp.o CClctrl.o CGp.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o
-	$(LD) ${XLINKERFLAGS} -o gp gp.o CGp.o CClctrl.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o $(LDFLAGS)
-
-libgp$(LIBSEXT): CClctrl.o CGp.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o
-	$(LIBSCOMMAND) libgp$(LIBSEXT) CGp.o CClctrl.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o
-
-libgp$(LIBDEXT): CClctrl.o CGp.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o
-	$(LIBDCOMMAND) libgp$(LIBDEXT) CGp.o CClctrl.o CMatrix.o ndlfortran.o CNoise.o ndlutil.o ndlstrutil.o CTransform.o COptimisable.o CKern.o CDist.o ndlassert.o
-
-gp.o: gp.cpp gp.h ndlexceptions.h ndlstrutil.h CMatrix.h ndlassert.h \
-  CNdlInterfaces.h ndlutil.h ndlfortran.h lapack.h CKern.h CTransform.h \
-  CDataModel.h CDist.h CGp.h CMltools.h COptimisable.h CNoise.h CClctrl.h
-	$(CC) -c gp.cpp -o gp.o $(CCFLAGS)
+gplvm.o: gplvm.cpp gplvm.h ndlexceptions.h ndlstrutil.h CMatrix.h \
+  ndlassert.h CNdlInterfaces.h ndlutil.h ndlfortran.h lapack.h CKern.h \
+  CTransform.h CDataModel.h CDist.h CGplvm.h CMltools.h COptimisable.h \
+  CNoise.h CClctrl.h
+	$(CC) -c gplvm.cpp -o gplvm.o $(CCFLAGS)
 
 CClctrl.o: CClctrl.cpp CClctrl.h ndlstrutil.h ndlexceptions.h ndlutil.h \
   ndlassert.h ndlfortran.h CMatrix.h CNdlInterfaces.h lapack.h
@@ -86,18 +67,6 @@ CMatrix.o: CMatrix.cpp CMatrix.h ndlassert.h ndlexceptions.h \
   CNdlInterfaces.h ndlstrutil.h ndlutil.h ndlfortran.h lapack.h
 	$(CC) -c CMatrix.cpp -o CMatrix.o $(CCFLAGS)
 
-CGp.o: CGp.cpp CGp.h CMltools.h ndlassert.h ndlexceptions.h \
-  ndlstrutil.h COptimisable.h CMatrix.h CNdlInterfaces.h ndlutil.h \
-  ndlfortran.h lapack.h CKern.h CTransform.h CDataModel.h CDist.h \
-  CNoise.h
-	$(CC) -c CGp.cpp -o CGp.o $(CCFLAGS)
-
-CIvm.o: CIvm.cpp CIvm.h CMltools.h ndlassert.h ndlexceptions.h \
-  ndlstrutil.h COptimisable.h CMatrix.h CNdlInterfaces.h ndlutil.h \
-  ndlfortran.h lapack.h CKern.h CTransform.h CDataModel.h CDist.h \
-  CNoise.h
-	$(CC) -c CIvm.cpp -o CIvm.o $(CCFLAGS)
-
 ndlutil.o: ndlutil.cpp ndlutil.h ndlassert.h ndlexceptions.h ndlfortran.h
 	$(CC) -c ndlutil.cpp -o ndlutil.o $(CCFLAGS)
 
@@ -113,4 +82,4 @@ ndlfortran.o: ndlfortran.f
 
 
 clean:
-	rm *.o
+	rm *.o $(objects) gplvm main

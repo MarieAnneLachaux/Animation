@@ -109,11 +109,13 @@ invK.pdinv(LcholK);
 //GET x
 int frame_n = atoi(argv[1]);
 int n = atoi(argv[2]);
-double matrice[n][2];
+double matrice[2][n];
 
 for (int i=1; i<=n; i++){
-  matrice[1][i]=1-(i/(n+1));
-  matrice[2][i]=i/(n+1);
+  matrice[0][i-1]=1-(i*1.0/(n+1));
+  matrice[1][i-1]=i*1.0/(n+1);
+  cout<<matrice[0][i-1]<<endl;
+  cout<<matrice[1][i-1]<<endl;
 }
 
 CMatrix revMatrix[n];
@@ -124,8 +126,10 @@ for (int i=0; i<n; i++){
 
   double num_temp_0,num_temp_1;
 
-  num_temp_0 =pmodel->pX->getVal(frame_n,0) * matrice[1][i]+pmodel->pX->getVal(frame_n+1,0)*matrice[2][i];
-  num_temp_1 =pmodel->pX->getVal(frame_n,1) * matrice[1][i]+pmodel->pX->getVal(frame_n+1,1)*matrice[2][i];
+  num_temp_0 =pmodel->pX->getVal(frame_n,0) * matrice[0][i]+pmodel->pX->getVal(frame_n+1,0)*matrice[1][i];
+  num_temp_1 =pmodel->pX->getVal(frame_n,1) * matrice[0][i]+pmodel->pX->getVal(frame_n+1,1)*matrice[1][i];
+  cout<<num_temp_0<<endl;
+  cout<<num_temp_1<<endl;
 
   Ktemp.setVal(num_temp_0, 0, 0);
   Ktemp.setVal(num_temp_1, 0, 1);
@@ -147,19 +151,19 @@ for (int i=0; i<n; i++){
   vector.trans();
   Y.trans();
 
-  CMatrix diffvector;
-  double absdiff = 0;
-  diffvector.resize(1,vector.getCols());
-  for(int j=0;j<vector.getCols();j++){
-          //double val = (Y.getVal(frame_n, j)- vector.getVal(j))/(Y.getVal(frame_n, j) + numeric_limits<float>::min());
-          //double val = abs(Y.getVal(frame_n, j)- vector.getVal(j));
-    double val = abs((Y.getVal(frame_n, j)- vector.getVal(j))/(ymean.getVal(j) + 0.000000000000001));
-    diffvector.setVal(val,j);
-    absdiff += val;
-  }
+  //CMatrix diffvector;
+  //double absdiff = 0;
+  //diffvector.resize(1,vector.getCols());
+  // for(int j=0;j<vector.getCols();j++){
+  //         //double val = (Y.getVal(frame_n, j)- vector.getVal(j))/(Y.getVal(frame_n, j) + numeric_limits<float>::min());
+  //         //double val = abs(Y.getVal(frame_n, j)- vector.getVal(j));
+  //   double val = abs((Y.getVal(frame_n, j)- vector.getVal(j))/(ymean.getVal(j) + 0.000000000000001));
+  //   diffvector.setVal(val,j);
+  //   absdiff += val;
+  // }
 
-  cout<<diffvector<<endl;
-  cout<<"absdiff = "<<absdiff<<endl;
+  //cout<<diffvector<<endl;
+  //cout<<"absdiff = "<<absdiff<<endl;
 
   CMatrix rev;
   rev.resize(1,vector.getCols());
@@ -169,15 +173,15 @@ for (int i=0; i<n; i++){
   }
 
   revMatrix[i].deepCopy(rev);
-  cout<<rev<<endl;
-  cout<<rev.getCols()<<endl;
+  //cout<<rev<<endl;
+  //cout<<rev.getCols()<<endl;
 
 }
 
 ofstream myfile;
 myfile.open ("exampleoutput.txt");
 for(int i = 0;i<n;i++){
-  myfile<<revMatrix[i]<<endl;
+  myfile<<revMatrix[i];
 }
 myfile.close();
 return 0;

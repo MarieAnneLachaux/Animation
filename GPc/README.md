@@ -4,13 +4,13 @@ for testing the gplvm, run the latter command in terminal
 the swagger.svml is in so-called "SVM light" format
 
 ```sh
-./gplvm -v 3 learn -L true examples/swagger.svml swagger.model
+./gplvm -v 3 learn -L true examples/new_pose.svml new_pose.model
 ```
 VISUALIZATION
 ===
 the result of the upper command is swagger.model. For visualization, run
 ```sh
-./gplvm gnuplot swagger_back_constrained.model swagger_back_constrained
+./gplvm gnuplot new_pose.model new_pose
 ```
 
 the upper command creates swagger_plot.gp which is a plot for gnuplot,
@@ -30,7 +30,7 @@ With back constraint, <del>still bugged at 7 juin 2016. </del> IT WORKS NOW!
 
 
 ```sh
-./gplvm -v 3 learn -L true -c rbf -g 0.0001 examples/swagger.svml swagger_back_constrained.model
+./gplvm -v 3 learn -L true -c rbf -g 0.0001 examples/new_pose.svml new_pose.model
 ```
 
 P.S.
