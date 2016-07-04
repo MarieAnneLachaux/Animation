@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/bvh">
+        <file>walk_turn_180.bvh</file>
+    </qresource>
+</RCC>
